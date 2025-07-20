@@ -3,7 +3,7 @@ const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "https://vogelfreipreview.skyops.pro/",
+    baseUrl: "https://stg.platform.creatingly.com/apps/",
     video: true,
     screenshotOnRunFailure: true,
     viewportWidth: 1280,
