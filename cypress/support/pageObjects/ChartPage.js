@@ -44,7 +44,7 @@ class ChartPage {
 
   waitForPageLoad() {
     cy.get("body", { timeout: 40000 }).should("be.visible");
-    cy.get('#welcome, .welcome-container, [name="Create Templates"], { timeout: 40000 }').should(
+    cy.get('#welcome, .welcome-container, [name="Create Templates"]', { timeout: 40000 }).should(
       "exist",
       { timeout: 30000 }
     );
