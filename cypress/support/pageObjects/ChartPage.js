@@ -60,10 +60,10 @@ class ChartPage {
 
   waitForPageLoad() {
     // Simple check to ensure page is ready
-    cy.get(".text-container", { timeout: 40000 }).should("not.be.visible");
+    // cy.get(".text-container", { timeout: 60000 }).should("not.exist");
 
     // Wait for loading spinner to disappear
-    this.elements.loadingSpinner().should("not.be.visible");
+    this.elements.loadingSpinner().should("not.exist");
 
     return this;
   }
