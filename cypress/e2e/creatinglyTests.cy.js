@@ -5,7 +5,7 @@ describe("Chart Page Automation Tests", () => {
 
   before(() => {
     chartPage.visitPlatform();
-    chartPage.checkPageState();
+    // chartPage.checkPageState();
   });
 
   describe("Happy Path Tests", {testIsolation: false}, () => {

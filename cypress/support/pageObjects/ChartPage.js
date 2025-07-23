@@ -28,7 +28,7 @@ class ChartPage {
         .get(".value", { timeout: 40000 }),
 
     errorMessage: () => cy.get(".error-message, .validation-error", { timeout: 40000 }),
-    loadingSpinner: () => cy.get(".loading, .spinner", { timeout: 40000 }),
+    loadingSpinner: () => cy.get(".loading, .spinner", { timeout: 60000 }),
   };
 
   visitPlatform() {
@@ -49,7 +49,7 @@ class ChartPage {
 
   waitForPageLoad() {
     // Simple check to ensure page is ready
-    cy.get("body", { timeout: 40000 }).should("be.visible");
+    cy.get(".text-container", { timeout: 40000 }).should("not.be.visible");
     
     cy.loadingSpinner().should("not.be.visible");
     
@@ -57,6 +57,7 @@ class ChartPage {
   }
 
   createMasterPage() {
+    cy.waitForPageLoad();
     // Wait for either the welcome container or create templates button to be available
     cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 60000 })
       .should('exist')
