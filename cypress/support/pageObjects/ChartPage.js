@@ -230,7 +230,7 @@ class ChartPage {
         cy.log('Page has welcome container');
       } else {
         cy.log('Page state unknown - waiting for elements to load');
-        cy.wait(2000);
+        cy.wait(4000);
       }
     });
     
