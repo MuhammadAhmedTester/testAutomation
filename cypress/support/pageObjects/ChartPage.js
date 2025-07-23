@@ -42,6 +42,7 @@ class ChartPage {
     
     // Wait for the page to be fully loaded before proceeding
     cy.waitForAppToLoad();
+    cy.wait(4000);
     cy.waitForPageLoad();
     
     return this;
@@ -57,6 +58,7 @@ class ChartPage {
   }
 
   createMasterPage() {
+    cy.wait(4000);
     cy.waitForPageLoad();
     // Wait for either the welcome container or create templates button to be available
     cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 60000 })
