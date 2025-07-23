@@ -3,7 +3,7 @@ import ChartPage from "../support/pageObjects/ChartPage";
 describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
-  beforeEach(() => {
+  before(() => {
     chartPage.visitPlatform();
     chartPage.checkPageState();
   });
@@ -26,6 +26,6 @@ describe("Chart Page Automation Tests", () => {
       chartPage.recenterChart();
     });
 
-    
+
   });
 });

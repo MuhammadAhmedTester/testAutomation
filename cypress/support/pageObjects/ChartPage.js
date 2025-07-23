@@ -42,6 +42,7 @@ class ChartPage {
     
     // Wait for the page to be fully loaded before proceeding
     cy.waitForAppToLoad();
+    cy.waitForPageLoad();
     
     return this;
   }
@@ -50,9 +51,7 @@ class ChartPage {
     // Simple check to ensure page is ready
     cy.get("body", { timeout: 40000 }).should("be.visible");
     
-    // Wait for any of the expected elements to be present
-    cy.get('#welcome.welcome-container, [name="Create Templates"], .welcome-container', { timeout: 30000 })
-      .should('exist');
+    cy.loadingSpinner().should("not.be.visible");
     
     return this;
   }
