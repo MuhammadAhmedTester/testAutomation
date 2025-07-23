@@ -15,3 +15,13 @@
 
 // Import commands.js using ES2015 syntax:
 import './commands'
+
+// Handle uncaught exceptions globally
+Cypress.on('uncaught:exception', (err, runnable) => {
+  if (err.message.includes("Cannot read properties of null (reading 'querySelectorAll')")) {
+    
+    return false;
+  }
+  
+  return true;
+});

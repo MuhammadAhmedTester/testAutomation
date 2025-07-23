@@ -44,13 +44,6 @@ module.exports = defineConfig({
           }
         }
       });
-
-      on('uncaught:exception', (err, runnable) => {
-        if (err.message.includes("Cannot read properties of null (reading 'querySelectorAll')")) {
-          return false;
-        }
-        return true
-      });
       
       on('after:screenshot', (details) => {
         return details;

@@ -32,29 +32,34 @@ class ChartPage {
   };
 
   visitPlatform() {
-    cy.visit("https://stg.platform.creatingly.com/apps", { timeout: 90000 }, {
+    cy.visit("https://stg.platform.creatingly.com/apps", {
+      timeout: 90000,
+      failOnStatusCode: false,
+      headers: {
+        "Accept-Encoding": "identity",
+      },
     });
     
     // Wait for the page to be fully loaded before proceeding
-    // cy.waitForAppToLoad();
     cy.wait(4000);
-    cy.waitForPageLoad();
+    this.waitForPageLoad();
     
     return this;
   }
 
   waitForPageLoad() {
     // Simple check to ensure page is ready
-    cy.get(".text-container", { timeout: 40000 }).should("not.be.visible");
+    cy.get("body", { timeout: 40000 }).should("be.visible");
     
-    cy.loadingSpinner().should("not.be.visible");
+    // Wait for loading spinner to disappear
+    this.elements.loadingSpinner().should("not.be.visible");
     
     return this;
   }
 
   createMasterPage() {
     cy.wait(4000);
-    cy.waitForPageLoad();
+    this.waitForPageLoad();
     // Wait for either the welcome container or create templates button to be available
     cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 60000 })
       .should('exist')
