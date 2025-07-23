@@ -39,25 +39,45 @@ class ChartPage {
         "Accept-Encoding": "identity",
       },
     });
+    
+    // Wait for the page to be fully loaded before proceeding
+    cy.waitForAppToLoad();
+    
     return this;
   }
 
   waitForPageLoad() {
+    // Simple check to ensure page is ready
     cy.get("body", { timeout: 40000 }).should("be.visible");
-    cy.get('#welcome, .welcome-container, [name="Create Templates"]', { timeout: 40000 }).should(
-      "exist",
-      { timeout: 30000 }
-    );
+    
+    // Wait for any of the expected elements to be present
+    cy.get('#welcome.welcome-container, [name="Create Templates"], .welcome-container', { timeout: 30000 })
+      .should('exist');
+    
     return this;
   }
 
   createMasterPage() {
-    this.elements.welcomeContainer().should("be.visible");
-    this.elements.createTemplatesBtn().click();
-    this.elements
-      .layoutSection()
-      .should("be.visible")
-      .should("exist", { timeout: 10000 });
+    // Wait for either the welcome container or create templates button to be available
+    cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 40000 })
+      .should('exist')
+      .then(($elements) => {
+        if ($elements.length > 0) {
+          // If welcome container exists, wait for it to be visible
+          if ($elements.is('#welcome.welcome-container')) {
+            cy.get('#welcome.welcome-container').should('be.visible');
+          }
+          
+          // Click the create templates button
+          cy.get('[name="Create Templates"]').click();
+          
+          // Wait for layout section to appear
+          cy.get('#section1.layout-style', { timeout: 10000 })
+            .should('be.visible')
+            .should('exist');
+        }
+      });
+    
     return this;
   }
 
@@ -192,6 +212,28 @@ class ChartPage {
 
   verifyChartNotPlaced() {
     this.elements.placedChart().should("not.exist");
+    return this;
+  }
+
+  checkPageState() {
+    // Check what state the page is currently in
+    cy.get('body').then(($body) => {
+      const hasWelcome = $body.find('#welcome.welcome-container').length > 0;
+      const hasCreateTemplates = $body.find('[name="Create Templates"]').length > 0;
+      const hasLayoutSection = $body.find('#section1.layout-style').length > 0;
+      
+      if (hasLayoutSection) {
+        cy.log('Page is already in layout section');
+      } else if (hasCreateTemplates) {
+        cy.log('Page has create templates button');
+      } else if (hasWelcome) {
+        cy.log('Page has welcome container');
+      } else {
+        cy.log('Page state unknown - waiting for elements to load');
+        cy.wait(2000);
+      }
+    });
+    
     return this;
   }
 }

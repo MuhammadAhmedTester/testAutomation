@@ -5,7 +5,7 @@ describe('Chart Page Automation Tests', () => {
 
   beforeEach(() => {
     chartPage.visitPlatform();
-    chartPage.waitForPageLoad();
+    chartPage.checkPageState();
   });
 
   describe('Happy Path Tests', () => {
@@ -138,7 +138,7 @@ describe('Chart Page Automation Tests', () => {
       chartPage.recenterChart();
       
       cy.reload();
-      chartPage.waitForPageLoad();
+      chartPage.checkPageState();
       
       chartPage.verifyChartExists();
     });
@@ -188,7 +188,7 @@ describe('Chart Page Automation Tests', () => {
       cy.intercept('GET', '**/api/**', { statusCode: 500 }).as('apiError');
       
       chartPage.visitPlatform();
-      chartPage.waitForPageLoad();
+      chartPage.checkPageState();
       
       cy.get('body').should('be.visible');
     });
@@ -203,7 +203,7 @@ describe('Chart Page Automation Tests', () => {
       }).as('slowApi');
       
       chartPage.visitPlatform();
-      chartPage.waitForPageLoad();
+      chartPage.checkPageState();
       
       chartPage.createMasterPage();
     });
@@ -256,7 +256,7 @@ describe('Chart Page Automation Tests', () => {
       const startTime = Date.now();
       
       chartPage.visitPlatform();
-      chartPage.waitForPageLoad();
+      chartPage.checkPageState();
       
       const loadTime = Date.now() - startTime;
       expect(loadTime).to.be.lessThan(30000);

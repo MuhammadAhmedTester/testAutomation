@@ -1,6 +1,21 @@
 Cypress.Commands.add('waitForPageLoad', () => {
+  // Wait for the page to be fully loaded
   cy.get('body').should('be.visible');
-  cy.get('#welcome, .welcome-container, [name="Create Templates"]').should('exist', { timeout: 30000 });
+  
+  // Wait for any of the expected elements to appear with better error handling
+  cy.get('body', { timeout: 40000 }).then(($body) => {
+    // Check if any of the expected elements exist
+    const welcomeElement = $body.find('#welcome.welcome-container').length > 0;
+    const createTemplatesBtn = $body.find('[name="Create Templates"]').length > 0;
+    const welcomeContainer = $body.find('.welcome-container').length > 0;
+    
+    if (!welcomeElement && !createTemplatesBtn && !welcomeContainer) {
+      // If none of the expected elements are found, wait a bit more and try again
+      cy.wait(2000);
+      cy.get('#welcome.welcome-container, [name="Create Templates"], .welcome-container', { timeout: 30000 })
+        .should('exist');
+    }
+  });
 });
 
 Cypress.Commands.add('dragAndDrop', { prevSubject: 'element' }, (subject, targetSelector) => {
@@ -145,5 +160,30 @@ Cypress.Commands.add('handleModal', (action = 'close') => {
         cy.get('.modal, .dialog, [role="dialog"]').find('.close, [aria-label="Close"]').click();
       }
     }
+  });
+});
+
+Cypress.Commands.add('waitForAppToLoad', () => {
+  // More robust page loading command that handles various loading states
+  cy.get('body').should('be.visible');
+  
+  // Wait for network requests to complete
+  cy.intercept('**/*').as('allRequests');
+  cy.wait('@allRequests', { timeout: 30000 }).then(() => {
+    // After network requests complete, check for expected elements
+    cy.get('body').then(($body) => {
+      const hasWelcome = $body.find('#welcome.welcome-container').length > 0;
+      const hasCreateTemplates = $body.find('[name="Create Templates"]').length > 0;
+      const hasWelcomeContainer = $body.find('.welcome-container').length > 0;
+      
+      if (!hasWelcome && !hasCreateTemplates && !hasWelcomeContainer) {
+        // If no expected elements found, wait for any loading indicators to disappear
+        cy.get('.loading, .spinner, [data-testid="loading"]', { timeout: 10000 }).should('not.exist');
+        
+        // Then try to find the elements again
+        cy.get('#welcome.welcome-container, [name="Create Templates"], .welcome-container', { timeout: 20000 })
+          .should('exist');
+      }
+    });
   });
 });
