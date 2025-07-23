@@ -32,16 +32,11 @@ class ChartPage {
   };
 
   visitPlatform() {
-    cy.visit("https://stg.platform.creatingly.com/apps", {
-      timeout: 90000,
-      failOnStatusCode: false,
-      headers: {
-        "Accept-Encoding": "identity",
-      },
+    cy.visit("https://stg.platform.creatingly.com/apps", { timeout: 90000 }, {
     });
     
     // Wait for the page to be fully loaded before proceeding
-    cy.waitForAppToLoad();
+    // cy.waitForAppToLoad();
     cy.wait(4000);
     cy.waitForPageLoad();
     

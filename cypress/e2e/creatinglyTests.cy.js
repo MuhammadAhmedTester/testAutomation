@@ -9,7 +9,7 @@ describe("Chart Page Automation Tests", () => {
   });
 
   describe("Happy Path Tests", {testIsolation: false}, () => {
-    it("should complete full chart workflow with viewport changes", () => {
+    it.only("should complete full chart workflow with viewport changes", () => {
       chartPage.createMasterPage();
       chartPage.verifyLayoutSection();
     });
