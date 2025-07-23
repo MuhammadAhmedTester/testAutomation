@@ -17,10 +17,10 @@ module.exports = defineConfig({
     responseTimeout: 30000,
     pageLoadTimeout: 60000,
     
-    retries: {
-      runMode: 2,
-      openMode: 1
-    },
+    // retries: {
+    //   runMode: 2,
+    //   openMode: 1
+    // },
     
     env: {
       validChartSize: '300',

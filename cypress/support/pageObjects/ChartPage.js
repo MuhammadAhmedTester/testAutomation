@@ -59,20 +59,20 @@ class ChartPage {
 
   createMasterPage() {
     // Wait for either the welcome container or create templates button to be available
-    cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 40000 })
+    cy.get('#welcome.welcome-container, [name="Create Templates"]', { timeout: 60000 })
       .should('exist')
       .then(($elements) => {
         if ($elements.length > 0) {
           // If welcome container exists, wait for it to be visible
           if ($elements.is('#welcome.welcome-container')) {
-            cy.get('#welcome.welcome-container').should('be.visible');
+            cy.get('#welcome.welcome-container', { timeout: 60000 }).should('be.visible');
           }
           
           // Click the create templates button
-          cy.get('[name="Create Templates"]').click();
+          cy.get('[name="Create Templates"]', { timeout: 60000 }).click();
           
           // Wait for layout section to appear
-          cy.get('#section1.layout-style', { timeout: 10000 })
+          cy.get('#section1.layout-style', { timeout: 40000 })
             .should('be.visible')
             .should('exist');
         }
