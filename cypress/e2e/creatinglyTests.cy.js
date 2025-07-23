@@ -4,40 +4,44 @@ describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
   before(() => {
-    // Visit the platform and set up clean state
-    chartPage.visitPlatform();
-    chartPage.checkPageState();
+    cy.visit("https://stg.platform.creatingly.com/apps", {
+      timeout: 90000,
+      failOnStatusCode: false,
+      headers: {
+        "Accept-Encoding": "identity",
+      },
+    });
+    cy.contains("Loading Design, Please wait..", { timeout: 60000 }).should("not.exist");
+
 
     // Check if we're in the layout section, if not create master page
-    cy.get("body").then(($body) => {
-      const hasLayoutSection = $body.find("#section1.layout-style").length > 0;
-
+    cy.get('body').then(($body) => {
+      const hasLayoutSection = $body.find('#section1.layout-style').length > 0;
       if (!hasLayoutSection) {
-        // Create master page to get to layout section
-        chartPage.createMasterPage();
+        return
+      } else {
+        cy.get('[aria-label="Clear"]').click();
+        cy.get('.NXConfirmButtonOk').click();
       }
-
-      // Analyze if chart is present in section, click on it and delete if found
-      chartPage.analyzeAndDeleteChartIfPresent();
-    });
-  });
-
-  describe("Happy Path Tests", { testIsolation: false }, () => {
-    it.only("should complete full chart workflow with viewport changes", () => {
-      chartPage.createMasterPage();
-      chartPage.verifyLayoutSection();
-    });
-
-    it("should check the availability of piechart and drag and drop it on section1", () => {
-      chartPage.checkChartAvailability();
-      chartPage.verifyPieChartExists();
-
-      chartPage.dragAndDropPieChart();
-      chartPage.verifyChartExists();
-    });
-
-    it("should be able to recenter the dropped pie chart", () => {
-      chartPage.recenterChart();
     });
   });
 });
+
+describe("Happy Path Tests", { testIsolation: false }, () => {
+  it.only("should complete full chart workflow with viewport changes", () => {
+    cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]').click();
+    cy.get('[aria-label="layout_section1"]').should("exist");
+
+    cy.get('[data-testid="Chart"]').should("exist");
+    cy.get('[data-testid="Chart"]').should("exist").trigger("mouseover");
+    cy.get('[data-testid="Pie Chart"]').should("exist").trigger("mousedown", { which: 1, button: 0 });
+    cy.get('[aria-label="layout_section1"]').trigger("mousemove").trigger("mouseup", { force: true });
+
+    cy.get('[title="Properties"]').click();
+    cy.get("div.grid-align-container > button.btn").eq(4).click();
+
+  });
+
+
+});
+
