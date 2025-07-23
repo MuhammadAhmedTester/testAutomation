@@ -1,5 +1,3 @@
-import ChartPage from "../support/pageObjects/ChartPage";
-
 describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
