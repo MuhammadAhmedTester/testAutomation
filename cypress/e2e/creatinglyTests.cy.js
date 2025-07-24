@@ -1,5 +1,7 @@
+import ChartPage from "../support/pageObjects/ChartPage";
+
 describe("Chart Page Automation Tests", () => {
-  const chartPage = new chartPage();
+  const chartPage = new ChartPage();
 
   before(() => {
     cy.visit("https://stg.platform.creatingly.com/apps", {
