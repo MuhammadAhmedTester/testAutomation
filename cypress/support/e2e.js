@@ -14,7 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+// import './commands'
 
 // Handle uncaught exceptions globally
 Cypress.on('uncaught:exception', (err, runnable) => {
