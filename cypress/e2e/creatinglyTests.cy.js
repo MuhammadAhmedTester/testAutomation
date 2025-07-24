@@ -1,5 +1,5 @@
 describe("Chart Page Automation Tests", () => {
-  const chartPage = new ChartPage();
+  const chartPage = new chartPage();
 
   before(() => {
     cy.visit("https://stg.platform.creatingly.com/apps", {
