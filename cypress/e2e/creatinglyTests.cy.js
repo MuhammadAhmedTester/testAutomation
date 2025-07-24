@@ -25,9 +25,7 @@ describe("Chart Page Automation Tests", () => {
       }
     });
   });
-});
 
-describe("Happy Path Tests", { testIsolation: false }, () => {
   it.only("should complete full chart workflow with viewport changes", () => {
     cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]').click();
     cy.get('[aria-label="layout_section1"]').should("exist");
