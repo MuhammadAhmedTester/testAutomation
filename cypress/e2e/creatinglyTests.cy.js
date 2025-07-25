@@ -33,12 +33,32 @@ describe("Chart Page Automation Tests", () => {
     cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }).click();
     cy.get('[aria-label="layout_section2"]', { timeout: 60000 }).should("exist");
 
-    // First hover over the Charts section to expand it
-    cy.get('[data-testid="Chart"]', { timeout: 60000 }).scrollIntoView().should("exist").trigger("mouseover");
-    cy.wait(1000); // Wait for the panel to expand
+    // Try multiple hover techniques to open the chart panel
+    cy.get('[data-testid="Chart"]', { timeout: 60000 }).scrollIntoView().should("exist");
     
-    // Now the Chart elements should be visible and clickable
-    // cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").click();
+    // Technique 1: Try the "Charts" section first (as in ChartPage)
+    cy.get('[data-testid="Charts"]', { timeout: 60000 }).should("exist").trigger("mouseover");
+    cy.wait(1000);
+    
+    // Technique 2: Standard hover on Chart element
+    cy.get('[data-testid="Chart"]').trigger("mouseover");
+    cy.wait(500);
+    
+    // Technique 3: Mouse enter and move
+    cy.get('[data-testid="Chart"]').trigger("mouseenter").trigger("mousemove");
+    cy.wait(500);
+    
+    // Technique 4: Force hover with position
+    cy.get('[data-testid="Chart"]').trigger("mouseover", { force: true, position: { x: 10, y: 10 } });
+    cy.wait(500);
+    
+    // Technique 5: Try clicking instead of hover
+    cy.get('[data-testid="Chart"]').click({ force: true });
+    cy.wait(1000);
+    
+    // Technique 6: Try right-click context menu
+    cy.get('[data-testid="Chart"]').rightclick({ force: true });
+    cy.wait(500);
     cy.wait(3000);
     cy.get('[data-testid="Pie Chart"]', { timeout: 60000 }).eq(0).should("exist").trigger("mousedown", { which: 1, button: 0 });
     cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).trigger("mousemove").trigger("mouseup", { force: true });
