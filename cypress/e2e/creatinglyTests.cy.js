@@ -11,6 +11,8 @@ describe("Chart Page Automation Tests", () => {
         "Accept-Encoding": "identity",
       },
     });
+    cy.wait(4000);
+    cy.contains("Loading...", { timeout: 60000 }).should("not.exist");
     cy.contains("Loading Design, Please wait..", { timeout: 60000 }).should("not.exist");
 
 
@@ -28,7 +30,7 @@ describe("Chart Page Automation Tests", () => {
 
   it.only("should complete full chart workflow with viewport changes", () => {
     cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }).click();
-    cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).should("exist");
+    cy.get('[aria-label="layout_section2"]', { timeout: 60000 }).should("exist");
 
     cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist");
     cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").trigger("mouseover");
