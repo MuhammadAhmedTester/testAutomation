@@ -13,7 +13,7 @@ describe("Chart Page Automation Tests", () => {
     });
     cy.wait(4000);
     cy.contains("Loading...", { timeout: 60000 }).should("not.exist");
-    cy.wait(4000);
+    cy.wait(6000);
     cy.contains("Loading Design, Please wait..", { timeout: 60000 }).should("not.exist");
 
 
