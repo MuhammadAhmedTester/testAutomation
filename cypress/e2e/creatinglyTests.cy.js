@@ -36,9 +36,9 @@ describe("Chart Page Automation Tests", () => {
     // Try multiple hover techniques to open the chart panel
     cy.get('[data-testid="Chart"]', { timeout: 60000 }).scrollIntoView().should("exist");
     
-    // Technique 1: Try the "Charts" section first (as in ChartPage)
-    cy.get('[data-testid="Charts"]', { timeout: 60000 }).should("exist").trigger("mouseover");
-    cy.wait(1000);
+    // // Technique 1: Try the "Charts" section first (as in ChartPage)
+    // cy.get('[data-testid="Charts"]', { timeout: 60000 }).should("exist").trigger("mouseover");
+    // cy.wait(1000);
     
     // Technique 2: Standard hover on Chart element
     cy.get('[data-testid="Chart"]').trigger("mouseover");
