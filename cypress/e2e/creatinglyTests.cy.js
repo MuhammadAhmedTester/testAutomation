@@ -48,8 +48,8 @@ describe("Chart Page Automation Tests", () => {
     cy.get('[data-testid="Chart"]').trigger("mouseenter").trigger("mousemove");
     cy.wait(500);
     
-    // Technique 4: Force hover with position
-    cy.get('[data-testid="Chart"]').trigger("mouseover", { force: true, position: { x: 10, y: 10 } });
+    // Technique 4: Force hover with correct position syntax
+    cy.get('[data-testid="Chart"]').trigger("mouseover", { force: true, position: "center" });
     cy.wait(500);
     
     // Technique 5: Try clicking instead of hover
