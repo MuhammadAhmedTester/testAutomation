@@ -34,7 +34,7 @@ describe("Chart Page Automation Tests", () => {
     cy.get('[aria-label="layout_section2"]', { timeout: 60000 }).should("exist");
 
     cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist");
-    cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").trigger("mouseover");
+    cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").click();
     cy.get('[data-testid="Pie Chart"]', { timeout: 60000 }).should("exist").trigger("mousedown", { which: 1, button: 0 });
     cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).trigger("mousemove").trigger("mouseup", { force: true });
 
