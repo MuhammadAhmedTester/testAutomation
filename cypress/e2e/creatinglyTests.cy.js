@@ -33,8 +33,12 @@ describe("Chart Page Automation Tests", () => {
     cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }).click();
     cy.get('[aria-label="layout_section2"]', { timeout: 60000 }).should("exist");
 
-    cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist");
-    cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").click();
+    // First hover over the Charts section to expand it
+    cy.get('[data-testid="Chart"]', { timeout: 60000 }).scrollIntoView().should("exist").trigger("mouseover");
+    cy.wait(1000); // Wait for the panel to expand
+    
+    // Now the Chart elements should be visible and clickable
+    // cy.get('[data-testid="Chart"]', { timeout: 60000 }).should("exist").click();
     cy.wait(3000);
     cy.get('[data-testid="Pie Chart"]', { timeout: 60000 }).eq(0).should("exist").trigger("mousedown", { which: 1, button: 0 });
     cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).trigger("mousemove").trigger("mouseup", { force: true });
