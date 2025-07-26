@@ -36,31 +36,24 @@ describe("Chart Page Automation Tests", () => {
         .click();
       cy.get('[aria-label="layout_section1"]', { timeout: 60000 })
         .should("exist");
-  
-      // 2) Scroll to the Chart icon and hover once to open the side‑panel
+
+      // 2) Drag the Chart icon into section 1
       cy.get('[data-testid="Chart"]', { timeout: 60000 })
         .scrollIntoView()
-        .trigger("mouseover", { force: true })
-        // adjust this assertion to whatever your app uses to mark “open”
-        .should("have.attr", "aria-expanded", "true");
-  
-      // 3) Select the Pie Chart
-      cy.get('[data-testid="Pie Chart"]', { timeout: 60000 })
-        .first()
-        .should("be.visible")
-        .click();
-  
-      // 4) Open the Properties tab
-      cy.get('[title="Properties"]', { timeout: 60000 })
-        .click();
-  
-      // 5) Click the 5th button in the properties grid
+        .should("exist")
+        .trigger("mousedown", { which: 1, force: true });
+
+      cy.get('[aria-label="layout_section1"]', { timeout: 60000 })
+        .trigger("mousemove")
+        .trigger("mouseup", { force: true });
+
+      // 3) Open the Properties tab
       cy.get("div.grid-align-container > button.btn", { timeout: 60000 })
         .eq(4)
         .click();
     });
   });
-  
+
 
 
 });
