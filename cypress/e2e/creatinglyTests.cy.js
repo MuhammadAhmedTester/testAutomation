@@ -16,15 +16,14 @@ describe("Chart Page Automation Tests", () => {
     cy.wait(6000);
     cy.get("#NotiflixLoadingMessage", { timeout: 60000 }).should("not.exist");
 
-
     // Check if we're in the layout section, if not create master page
-    cy.get('body').then(($body) => {
-      const hasLayoutSection = $body.find('#section1.layout-style').length > 0;
+    cy.get("body").then(($body) => {
+      const hasLayoutSection = $body.find("#section1.layout-style").length > 0;
       if (!hasLayoutSection) {
-        return
+        return;
       } else {
         cy.get('[aria-label="Clear"]', { timeout: 60000 }).click();
-        cy.get('.NXConfirmButtonOk'), { timeout: 60000 }.click();
+        cy.get(".NXConfirmButtonOk"), { timeout: 60000 }.click();
       }
     });
   });
@@ -32,10 +31,13 @@ describe("Chart Page Automation Tests", () => {
   describe("Chart Workflow", () => {
     it.only("should complete full chart workflow with viewport changes", () => {
       // 1) Open the Templates panel
-      cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 })
-        .click();
-      cy.get('[aria-label="layout_section1"]', { timeout: 60000 })
-        .should("exist");
+      cy.get(
+        '[aria-label="Click to get the Templates of Desktop and Mobile devices."]',
+        { timeout: 60000 }
+      ).click();
+      cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).should(
+        "exist"
+      );
 
       // 2) Drag the Chart icon into section 1
       cy.get('[data-testid="Chart"]', { timeout: 60000 })
@@ -47,14 +49,12 @@ describe("Chart Page Automation Tests", () => {
         .trigger("mousemove")
         .trigger("mouseup", { force: true });
 
+      cy.get('[data-testid="Chart"]', { timeout: 60000 }).click();
+
       // 3) Open the Properties tab
-      cy.get("div.grid-align-container > button.btn", { timeout: 60000 })
-        .eq(4)
-        .click();
+      cy.get(".grid-align-container > :nth-child(5)", {
+        timeout: 60000,
+      }).click();
     });
   });
-
-
-
 });
-
