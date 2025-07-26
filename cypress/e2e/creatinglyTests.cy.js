@@ -11,50 +11,23 @@ describe("Chart Page Automation Tests", () => {
         "Accept-Encoding": "identity",
       },
     });
-    cy.wait(4000);
-    cy.contains("Loading...", { timeout: 60000 }).should("not.exist");
-    cy.wait(6000);
-    cy.get("#NotiflixLoadingMessage", { timeout: 60000 }).should("not.exist");
-
-    // Check if we're in the layout section, if not create master page
-    cy.get("body").then(($body) => {
-      const hasLayoutSection = $body.find("#section1.layout-style").length > 0;
-      if (!hasLayoutSection) {
-        return;
-      } else {
-        cy.get('[aria-label="Clear"]', { timeout: 60000 }).click();
-        cy.get(".NXConfirmButtonOk"), { timeout: 60000 }.click();
-      }
-    });
+    chartPage.waitForPageLoad();
+    chartPage.handleLayoutSection();
   });
 
   describe("Chart Workflow", () => {
     it.only("should complete full chart workflow with viewport changes", () => {
-      // 1) Open the Templates panel
-      cy.get(
-        '[aria-label="Click to get the Templates of Desktop and Mobile devices."]',
-        { timeout: 60000 }
-      ).click();
-      cy.get('[aria-label="layout_section1"]', { timeout: 60000 }).should(
-        "exist"
-      );
+      // Open the Templates panel to access chart components
+      chartPage.openTemplatesPanel();
 
-      // 2) Drag the Chart icon into section 1
-      cy.get('[data-testid="Chart"]', { timeout: 60000 })
-        .scrollIntoView()
-        .should("exist")
-        .trigger("mousedown", { which: 1, force: true });
+      // Drag the Chart icon into section 1 to add it to the layout
+      chartPage.dragChartToSection();
 
-      cy.get('[aria-label="layout_section1"]', { timeout: 60000 })
-        .trigger("mousemove")
-        .trigger("mouseup", { force: true });
+      // Click on Container1 to select the chart element
+      chartPage.clickContainer1();
 
-      cy.get('#Container1', { timeout: 60000 }).click();
-
-      // 3) Open the Properties tab
-      cy.get(".grid-align-container > :nth-child(5)", {
-        timeout: 60000,
-      }).click();
+      // Open the Properties tab to configure chart settings
+      chartPage.openPropertiesTab();
     });
   });
 });
