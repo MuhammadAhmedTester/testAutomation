@@ -34,7 +34,7 @@ describe("Chart Page Automation Tests", () => {
       // 1) Open the Templates panel
       cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 })
         .click();
-      cy.get('[aria-label="layout_section2"]', { timeout: 60000 })
+      cy.get('[aria-label="layout_section1"]', { timeout: 60000 })
         .should("exist");
   
       // 2) Scroll to the Chart icon and hover once to open the side‑panel
