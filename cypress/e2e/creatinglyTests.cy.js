@@ -49,7 +49,7 @@ describe("Chart Page Automation Tests", () => {
         .trigger("mousemove")
         .trigger("mouseup", { force: true });
 
-      cy.get('[data-testid="Chart"]', { timeout: 60000 }).click();
+      cy.get('#Chart1', { timeout: 60000 }).click();
 
       // 3) Open the Properties tab
       cy.get(".grid-align-container > :nth-child(5)", {
