@@ -14,7 +14,7 @@ describe("Chart Page Automation Tests", () => {
     cy.wait(4000);
     cy.contains("Loading...", { timeout: 60000 }).should("not.exist");
     cy.wait(6000);
-    cy.contains("Loading Design, Please wait..", { timeout: 60000 }).should("not.exist");
+    cy.get("#NotiflixLoadingMessage", { timeout: 60000 }).should("not.exist");
 
 
     // Check if we're in the layout section, if not create master page
