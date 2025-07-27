@@ -5,6 +5,7 @@ class ChartPage {
     layoutSection: () => cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get('#Container1', { timeout: 60000 }),
+    chart1: () => cy.get('[data-testid="Chart1"]', { timeout: 60000 }),
     propertiesTab: () => cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
     
     // Loading and confirmation elements
@@ -48,6 +49,11 @@ class ChartPage {
 
   clickContainer1() {
     this.elements.container1().click();
+    return this;
+  }
+
+  clickChart1() {
+    this.elements.chart1().click();
     return this;
   }
 

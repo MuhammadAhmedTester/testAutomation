@@ -23,8 +23,8 @@ describe("Chart Page Automation Tests", () => {
       // Drag the Chart icon into section 1 to add it to the layout
       chartPage.dragChartToSection();
 
-      // Click on Container1 to select the chart element
-      chartPage.clickContainer1();
+      // Click on Chart1 to select the chart element
+      chartPage.clickChart1();
 
       // Open the Properties tab to configure chart settings
       chartPage.openPropertiesTab();
@@ -80,7 +80,7 @@ describe("Chart Page Automation Tests", () => {
     it("should handle properties tab not available", () => {
       chartPage.openTemplatesPanel();
       chartPage.dragChartToSection();
-      chartPage.clickContainer1();
+      chartPage.clickChart1();
       
       // Try to click on non-existent properties tab
       cy.get('.non-existent-properties-tab', { timeout: 5000 })
@@ -164,7 +164,7 @@ describe("Chart Page Automation Tests", () => {
       
       // Change to tablet viewport
       cy.viewport(768, 1024);
-      chartPage.clickContainer1();
+      chartPage.clickChart1();
       
       // Verify functionality across viewports
       chartPage.elements.propertiesTab().should('exist');
@@ -181,7 +181,7 @@ describe("Chart Page Automation Tests", () => {
       cy.wait('@slowNetwork');
       
       // Verify workflow completes despite slow network
-      chartPage.elements.container1().should('exist');
+      chartPage.elements.chart1().should('exist');
     });
 
     it("should handle chart removal and re-placement", () => {
@@ -206,7 +206,7 @@ describe("Chart Page Automation Tests", () => {
       // Simulate concurrent interactions
       chartPage.elements.chartIcon().click({ force: true });
       chartPage.elements.layoutSection().click({ force: true });
-      chartPage.elements.container1().click({ force: true });
+      chartPage.elements.chart1().click({ force: true });
       
       // Verify page remains stable
       chartPage.elements.templatesPanel().should('exist');
@@ -230,7 +230,7 @@ describe("Chart Page Automation Tests", () => {
       cy.viewport(320, 568); // Minimum mobile viewport
       chartPage.openTemplatesPanel();
       chartPage.dragChartToSection();
-      chartPage.clickContainer1();
+      chartPage.clickChart1();
       
       // Verify functionality at minimum size
       chartPage.elements.propertiesTab().should('exist');
@@ -240,7 +240,7 @@ describe("Chart Page Automation Tests", () => {
       cy.viewport(2560, 1440); // Large desktop viewport
       chartPage.openTemplatesPanel();
       chartPage.dragChartToSection();
-      chartPage.clickContainer1();
+      chartPage.clickChart1();
       
       // Verify functionality at maximum size
       chartPage.elements.propertiesTab().should('exist');
