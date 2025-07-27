@@ -9,7 +9,7 @@ class ChartPage {
     propertiesTab: () => cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
     
     // Loading and confirmation elements
-    loadingMessage: () => cy.contains("Loading...", { timeout: 60000 }),
+    loadingMessage: () => cy.get(".text-container", { timeout: 60000 }),
     notiflixLoadingMessage: () => cy.get("#NotiflixLoadingMessage", { timeout: 60000 }),
     clearButton: () => cy.get('[aria-label="Clear"]', { timeout: 60000 }),
     confirmButton: () => cy.get(".NXConfirmButtonOk", { timeout: 60000 }),
