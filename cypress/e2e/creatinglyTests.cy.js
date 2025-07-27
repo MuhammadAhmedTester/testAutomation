@@ -74,7 +74,7 @@ describe("Chart Page Automation Tests", () => {
         .trigger('mouseup', { force: true });
       
       // Verify no chart was placed
-      cy.get('[data-testid="Chart1"]').should('not.exist');
+      cy.get('#Chart1').should('not.exist');
     });
 
     it("should handle properties tab not available", () => {
@@ -111,7 +111,7 @@ describe("Chart Page Automation Tests", () => {
       cy.get('body').trigger("mouseup", { force: true });
       
       // Verify chart was not placed
-      cy.get('[data-testid="Chart1"]').should('not.exist');
+      cy.get('#Chart1').should('not.exist');
     });
   });
 
@@ -193,11 +193,11 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.confirmButton().click({ force: true });
       
       // Verify chart is removed
-      cy.get('[data-testid="Chart1"]').should('not.exist');
+      cy.get('#Chart1').should('not.exist');
       
       // Place chart again
       chartPage.dragChartToSection();
-      cy.get('[data-testid="Chart1"]').should('exist');
+      cy.get('#Chart1').should('exist');
     });
 
     it("should handle concurrent user interactions", () => {

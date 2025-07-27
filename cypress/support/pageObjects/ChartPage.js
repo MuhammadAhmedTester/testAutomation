@@ -5,7 +5,7 @@ class ChartPage {
     layoutSection: () => cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get('#Container1', { timeout: 60000 }),
-    chart1: () => cy.get('[data-testid="Chart1"]', { timeout: 60000 }),
+    chart1: () => cy.get('#Chart1', { timeout: 60000 }),
     propertiesTab: () => cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
     
     // Loading and confirmation elements
@@ -20,7 +20,7 @@ class ChartPage {
     // Chart elements
     chartsSection: () => cy.get('[data-testid="Charts"]', { timeout: 40000 }),
     pieChartElement: () => cy.get('[data-testid="Pie Chart"]', { timeout: 40000 }),
-    placedChart: () => cy.get('[data-testid="Chart1"]', { timeout: 40000 }),
+    placedChart: () => cy.get('#Chart1', { timeout: 40000 }),
     
     // Additional elements for negative tests
     allCharts: () => cy.get('[data-testid^="Chart"]'),
