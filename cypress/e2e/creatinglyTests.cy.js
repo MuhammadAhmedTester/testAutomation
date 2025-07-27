@@ -21,7 +21,7 @@ describe("Chart Page Automation Tests", () => {
         chartPage.elements.confirmButton().click();
         cy.log("Template reset completed - Chart was found and cleared");
       } else {
-        cy.log("No Chart1 found - proceeding directly to tests");
+        cy.log("No Chart found - proceeding directly to tests");
       }
     });
 

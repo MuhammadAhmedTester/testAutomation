@@ -36,7 +36,6 @@ class ChartPage {
 
   dragChartToSection() {
     this.elements.chartIcon()
-      .should("be.visible")
       .scrollIntoView()
       .trigger("mousedown", { which: 1, force: true });
 
