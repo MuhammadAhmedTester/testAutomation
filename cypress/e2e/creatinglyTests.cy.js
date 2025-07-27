@@ -28,7 +28,7 @@ describe("Chart Page Automation Tests", () => {
   });
 
   describe("Chart Workflow - Happy Path", () => {
-    it.only("should complete full chart workflow with viewport changes", () => {
+    it("should complete full chart workflow with viewport changes", () => {
       // Open the Templates panel to access chart components
       chartPage.openTemplatesPanel();
 
@@ -53,7 +53,19 @@ describe("Chart Page Automation Tests", () => {
         },
       });
       chartPage.waitForPageLoad();
-      chartPage.handleLayoutSection();
+      
+      // Check if #Chart1 is present in section1
+      cy.get("body").then(($body) => {
+        const hasChart1 = $body.find("#Chart1").length > 0;
+        if (hasChart1) {
+          // Reset template through clear and confirm buttons
+          chartPage.elements.clearButton().click();
+          chartPage.elements.confirmButton().click();
+          cy.log("Template reset completed - Chart was found and cleared");
+        } else {
+          cy.log("No Chart found - proceeding directly to tests");
+        }
+      });
     });
 
     it("should handle network timeout when opening templates panel", () => {
@@ -137,7 +149,19 @@ describe("Chart Page Automation Tests", () => {
         },
       });
       chartPage.waitForPageLoad();
-      chartPage.handleLayoutSection();
+      
+      // Check if #Chart1 is present in section1
+      cy.get("body").then(($body) => {
+        const hasChart1 = $body.find("#Chart1").length > 0;
+        if (hasChart1) {
+          // Reset template through clear and confirm buttons
+          chartPage.elements.clearButton().click();
+          chartPage.elements.confirmButton().click();
+          cy.log("Template reset completed - Chart was found and cleared");
+        } else {
+          cy.log("No Chart found - proceeding directly to tests");
+        }
+      });
     });
 
     it("should handle page refresh during chart workflow", () => {
@@ -235,7 +259,19 @@ describe("Chart Page Automation Tests", () => {
         },
       });
       chartPage.waitForPageLoad();
-      chartPage.handleLayoutSection();
+      
+      // Check if #Chart1 is present in section1
+      cy.get("body").then(($body) => {
+        const hasChart1 = $body.find("#Chart1").length > 0;
+        if (hasChart1) {
+          // Reset template through clear and confirm buttons
+          chartPage.elements.clearButton().click();
+          chartPage.elements.confirmButton().click();
+          cy.log("Template reset completed - Chart was found and cleared");
+        } else {
+          cy.log("No Chart found - proceeding directly to tests");
+        }
+      });
     });
 
     it("should handle minimum viewport size", () => {
