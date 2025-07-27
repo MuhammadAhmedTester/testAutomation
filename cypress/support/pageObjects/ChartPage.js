@@ -1,7 +1,7 @@
 class ChartPage {
   elements = {
     // Navigation and setup elements
-    templatesPanel: () => cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }),
+    templatesPanel: () => cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }).scrollIntoView(),
     layoutSection: () => cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get('#Container1', { timeout: 60000 }),
