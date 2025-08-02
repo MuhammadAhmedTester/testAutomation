@@ -13,7 +13,7 @@ class ChartPage {
     loadingMessage: () => cy.get(".text-container", { timeout: 60000 }),
     notiflixLoadingMessage: () => cy.get("#NotiflixLoadingMessage", { timeout: 60000 }),
     clearButton: () => cy.get('[aria-label="Clear"]', { timeout: 60000 }),
-    confirmButton: () => cy.get(".NXConfirmButtonOk", { timeout: 60000 }),
+    confirmButton: () => cy.get("#NXConfirmButtonOk", { timeout: 60000 }),
     
     // Layout section check
     layoutSectionCheck: () => cy.get("#section1.layout-style"),
