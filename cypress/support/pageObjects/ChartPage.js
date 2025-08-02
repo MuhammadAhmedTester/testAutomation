@@ -76,6 +76,27 @@ class ChartPage {
     return this;
   }
 
+  // New efficient initialization method
+  initializePage() {
+    this.waitForPageLoad();
+    
+    // Check for existing master page and clear if found
+    cy.get("body").then(($body) => {
+      const masterPageExists = $body.find("#MasterPage").length > 0;
+      
+      if (masterPageExists) {
+        cy.log("Master page found - clearing template");
+        this.elements.clearButton().click({ force: true });
+        this.elements.confirmButton().click({ force: true });
+        cy.wait(1000); // Brief wait for cleanup
+      } else {
+        cy.log("No master page found - proceeding with tests");
+      }
+    });
+    
+    return this;
+  }
+
   waitForPageLoad() {
     cy.wait(4000);
     this.elements.loadingMessage().should("not.exist");

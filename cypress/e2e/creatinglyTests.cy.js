@@ -4,6 +4,7 @@ describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
   before(() => {
+    // Visit the page with proper configuration
     cy.visit("https://stg.platform.creatingly.com/apps", {
       timeout: 90000,
       failOnStatusCode: false,
@@ -11,18 +12,21 @@ describe("Chart Page Automation Tests", () => {
         "Accept-Encoding": "identity",
       },
     });
+    
+    // Wait for page to load completely
     chartPage.waitForPageLoad();
-    // Check if #Chart1 is present in section1
+    
+    // Check for master page and clear if found
     cy.get("body").then(($body) => {
-      const hasSection =
-        $body.find(chartPage.elements.masterPage).length > 0;
-      if (hasSection) {
-        // Reset template through clear and confirm buttons
-        chartPage.elements.clearButton().click();
-        chartPage.elements.confirmButton().click();
-        cy.log("Template reset completed - Chart was found and cleared");
+      const masterPageExists = $body.find("#MasterPage").length > 0;
+      
+      if (masterPageExists) {
+        cy.log("Master page found - clearing template");
+        chartPage.elements.clearButton().click({ force: true });
+        chartPage.elements.confirmButton().click({ force: true });
+        cy.log("Template reset completed");
       } else {
-        cy.log("No Chart found - proceeding directly to tests");
+        cy.log("No master page found - proceeding with tests");
       }
     });
   });
