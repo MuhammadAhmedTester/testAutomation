@@ -36,14 +36,31 @@ class ChartPage {
   }
 
   dragChartToSection() {
+    // Improved drag-and-drop using coordinates
     this.elements.chartIcon()
       .scrollIntoView()
-      .trigger("mousedown", { which: 1, force: true });
+      .should('be.visible')
+      .then($chartIcon => {
+        this.elements.layoutSection()
+          .should('be.visible')
+          .then($layoutSection => {
+            const chartIconRect = $chartIcon[0].getBoundingClientRect();
+            const layoutRect = $layoutSection[0].getBoundingClientRect();
 
-    this.elements.layoutSection()
-      .trigger("mousemove", { force: true })
-      .trigger("mouseup", { force: true });
+            // Calculate center points
+            const startX = chartIconRect.left + chartIconRect.width / 2;
+            const startY = chartIconRect.top + chartIconRect.height / 2;
+            const endX = layoutRect.left + layoutRect.width / 2;
+            const endY = layoutRect.top + layoutRect.height / 2;
 
+            cy.wrap($chartIcon)
+              .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
+            cy.wait(200); // Small wait to simulate user drag
+            cy.wrap($layoutSection)
+              .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
+              .trigger('mouseup', { force: true });
+          });
+      });
     return this;
   }
 

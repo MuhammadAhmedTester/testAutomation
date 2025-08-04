@@ -39,6 +39,9 @@ describe("Chart Page Automation Tests", () => {
       // Drag the Chart icon into section 1 to add it to the layout
       chartPage.dragChartToSection();
 
+      // Assert that the chart was placed successfully
+      chartPage.elements.chart1().should('exist').and('be.visible');
+
       // Click on Chart1 to select the chart element
       chartPage.clickChart1();
 
