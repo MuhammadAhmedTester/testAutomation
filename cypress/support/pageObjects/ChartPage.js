@@ -35,30 +35,27 @@ class ChartPage {
     return this;
   }
 
+  // HTML5 drag-and-drop helper
+  html5DragDrop(subject, target) {
+    const dataTransfer = new DataTransfer();
+    cy.wrap(subject)
+      .trigger('mousedown', { button: 0, force: true })
+      .trigger('dragstart', { dataTransfer, force: true });
+    cy.wrap(target)
+      .trigger('dragenter', { dataTransfer, force: true })
+      .trigger('dragover', { dataTransfer, force: true })
+      .trigger('drop', { dataTransfer, force: true });
+    cy.wrap(subject).trigger('dragend', { dataTransfer, force: true });
+  }
+
   dragChartToSection() {
-    // Improved drag-and-drop using coordinates
     this.elements.chartIcon()
-      .scrollIntoView()
-      .should('be.visible')
+      .should('exist')
       .then($chartIcon => {
         this.elements.layoutSection()
-          .should('be.visible')
+          .should('exist')
           .then($layoutSection => {
-            const chartIconRect = $chartIcon[0].getBoundingClientRect();
-            const layoutRect = $layoutSection[0].getBoundingClientRect();
-
-            // Calculate center points
-            const startX = chartIconRect.left + chartIconRect.width / 2;
-            const startY = chartIconRect.top + chartIconRect.height / 2;
-            const endX = layoutRect.left + layoutRect.width / 2;
-            const endY = layoutRect.top + layoutRect.height / 2;
-
-            cy.wrap($chartIcon)
-              .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
-            cy.wait(200); // Small wait to simulate user drag
-            cy.wrap($layoutSection)
-              .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
-              .trigger('mouseup', { force: true });
+            this.html5DragDrop($chartIcon, $layoutSection);
           });
       });
     return this;
