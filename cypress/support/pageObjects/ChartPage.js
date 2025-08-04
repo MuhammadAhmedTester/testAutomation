@@ -35,17 +35,34 @@ class ChartPage {
     return this;
   }
 
-  // HTML5 drag-and-drop helper
+  // Enhanced HTML5 drag-and-drop helper
   html5DragDrop(subject, target) {
-    const dataTransfer = new DataTransfer();
-    cy.wrap(subject)
-      .trigger('mousedown', { button: 0, force: true })
-      .trigger('dragstart', { dataTransfer, force: true });
-    cy.wrap(target)
-      .trigger('dragenter', { dataTransfer, force: true })
-      .trigger('dragover', { dataTransfer, force: true })
-      .trigger('drop', { dataTransfer, force: true });
-    cy.wrap(subject).trigger('dragend', { dataTransfer, force: true });
+    cy.wrap(subject).then($subject => {
+      cy.wrap(target).then($target => {
+        const dataTransfer = new DataTransfer();
+        // Set dummy data for compatibility
+        dataTransfer.setData('text/plain', 'chart-drag');
+
+        // Get bounding rects for coordinates
+        const subjectRect = $subject[0].getBoundingClientRect();
+        const targetRect = $target[0].getBoundingClientRect();
+        const startX = subjectRect.left + subjectRect.width / 2;
+        const startY = subjectRect.top + subjectRect.height / 2;
+        const endX = targetRect.left + targetRect.width / 2;
+        const endY = targetRect.top + targetRect.height / 2;
+
+        cy.wrap($subject)
+          .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true })
+          .trigger('dragstart', { dataTransfer, clientX: startX, clientY: startY, force: true });
+        cy.wait(200);
+        cy.wrap($target)
+          .trigger('dragenter', { dataTransfer, clientX: endX, clientY: endY, force: true })
+          .trigger('dragover', { dataTransfer, clientX: endX, clientY: endY, force: true })
+          .trigger('drop', { dataTransfer, clientX: endX, clientY: endY, force: true });
+        cy.wait(100);
+        cy.wrap($subject).trigger('dragend', { dataTransfer, clientX: endX, clientY: endY, force: true });
+      });
+    });
   }
 
   dragChartToSection() {
