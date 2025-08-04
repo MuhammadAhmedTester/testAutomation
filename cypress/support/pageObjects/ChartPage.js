@@ -133,6 +133,7 @@ class ChartPage {
     this.elements.loadingMessage().should("not.exist");
     cy.wait(6000);
     this.elements.notiflixLoadingMessage().should("not.exist");
+    cy.wait(6000);
     return this;
   }
 
