@@ -16,6 +16,9 @@
 // Import commands.js using ES2015 syntax:
 // import './commands'
 
+// Import cypress-real-events for real user event support
+import 'cypress-real-events/support';
+
 // Handle uncaught exceptions globally
 Cypress.on('uncaught:exception', (err, runnable) => {
   if (err.message.includes("Cannot read properties of null (reading 'querySelectorAll')")) {

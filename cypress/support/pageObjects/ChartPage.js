@@ -65,16 +65,16 @@ class ChartPage {
     });
   }
 
-  dragChartToSection() {
-    this.elements.chartIcon()
-      .should('exist')
-      .then($chartIcon => {
-        this.elements.layoutSection()
-          .should('exist')
-          .then($layoutSection => {
-            this.html5DragDrop($chartIcon, $layoutSection);
-          });
-      });
+  async dragChartToSection() {
+    await this.elements.chartIcon()
+      .scrollIntoView()
+      .should('be.visible')
+      .realMouseDown();
+    await this.elements.layoutSection()
+      .scrollIntoView()
+      .should('be.visible')
+      .realMouseMove()
+      .realMouseUp();
     return this;
   }
 
