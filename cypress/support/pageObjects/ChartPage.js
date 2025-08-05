@@ -66,7 +66,14 @@ class ChartPage {
   }
 
   async dragChartToSection() {
+    // Open chart menu and press down on chart icon
     await this.elements.chartIcon()
+      .scrollIntoView()
+      .should('be.visible')
+      .realMouseDown();
+
+    // Now select the Pie Chart and drag it to the section
+    await this.elements.pieChartElement()
       .scrollIntoView()
       .should('be.visible')
       .realMouseDown();
