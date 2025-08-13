@@ -65,21 +65,20 @@ class ChartPage {
     });
   }
 
-  async dragChartToSection() {
-    // Open chart menu and press down on chart icon
-    await this.elements.chartIcon()
-      .scrollIntoView()
-      .should('be.visible')
-      .realMouseDown();
-    await this.elements.pieChartElement()
-      .scrollIntoView()
-      .should('be.visible')
-      .realMouseDown();
-    await this.elements.layoutSection()
-      .scrollIntoView()
-      .should('be.visible')
-      .realMouseMove()
-      .realMouseUp();
+  dragChartToSection() {
+    // Use direct DOM event dispatch for drag-and-drop
+    cy.get('[data-testid="Pie Chart"]').then($draggable => {
+      cy.get('[aria-label="layout_section1"]').then($droppable => {
+        const draggable = $draggable[0];
+        const droppable = $droppable[0];
+        const coords = droppable.getBoundingClientRect();
+
+        draggable.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+        draggable.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 10, clientY: 0 }));
+        draggable.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: coords.x + 10, clientY: coords.y + 10 }));
+        draggable.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+      });
+    });
     return this;
   }
 
