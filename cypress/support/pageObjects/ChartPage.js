@@ -72,7 +72,7 @@ class ChartPage {
 
     // Use robust drag-and-drop with DataTransfer
     cy.get('[data-testid="Chart"]').then($draggable => {
-      cy.get('[aria-label="layout_section1"]').then($droppable => {
+      cy.get('[aria-label="page_Artboard1"]').then($droppable => {
         const draggable = $draggable[0];
         const droppable = $droppable[0];
         const coords = droppable.getBoundingClientRect();
