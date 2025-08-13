@@ -71,7 +71,7 @@ class ChartPage {
     cy.wait(3000);
 
     // Use direct DOM event dispatch for drag-and-drop
-    cy.get('[data-testid="Pie Chart"]').then($draggable => {
+    cy.get('[data-testid="Chart"]').then($draggable => {
       cy.get('[aria-label="layout_section1"]').then($droppable => {
         const draggable = $draggable[0];
         const droppable = $droppable[0];
