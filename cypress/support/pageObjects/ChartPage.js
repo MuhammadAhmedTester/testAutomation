@@ -68,6 +68,7 @@ class ChartPage {
   dragChartToSection() {
     // Hover over the chart icon to reveal chart options
     cy.get('[data-testid="Chart"]').trigger('mouseover');
+    cy.wait(3000);
 
     // Use direct DOM event dispatch for drag-and-drop
     cy.get('[data-testid="Pie Chart"]').then($draggable => {
