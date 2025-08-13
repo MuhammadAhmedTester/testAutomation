@@ -67,28 +67,28 @@ class ChartPage {
 
   dragChartToSection() {
     // Hover over the chart icon to reveal chart options
-    cy.get('[data-testid="Chart"]').trigger('mouseover');
+    cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').trigger('mouseover');
     cy.wait(500);
 
-    // Use robust drag-and-drop with DataTransfer
-    cy.get('[data-testid="Chart"]').then($draggable => {
-      cy.get('[aria-label="page_Artboard1"]').then($droppable => {
-        const draggable = $draggable[0];
-        const droppable = $droppable[0];
-        const coords = droppable.getBoundingClientRect();
-        const dataTransfer = new DataTransfer();
+    // Ensure Pie Chart is visible and interactable
+    cy.get('[data-testid="Pie Chart"]').scrollIntoView().should('be.visible').then($pieChart => {
+      cy.get('[aria-label="layout_section1"]').scrollIntoView().should('be.visible').then($section => {
+        // Get center coordinates of Pie Chart and section
+        const pieRect = $pieChart[0].getBoundingClientRect();
+        const sectionRect = $section[0].getBoundingClientRect();
+        const startX = pieRect.left + pieRect.width / 2;
+        const startY = pieRect.top + pieRect.height / 2;
+        const endX = sectionRect.left + sectionRect.width / 2;
+        const endY = sectionRect.top + sectionRect.height / 2;
 
-        // Drag start on Pie Chart
-        draggable.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-        draggable.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer }));
-
-        // Drag over and drop on section
-        droppable.dispatchEvent(new DragEvent('dragenter', { bubbles: true, dataTransfer }));
-        droppable.dispatchEvent(new DragEvent('dragover', { bubbles: true, dataTransfer }));
-        droppable.dispatchEvent(new DragEvent('drop', { bubbles: true, dataTransfer }));
-
-        // Drag end on Pie Chart
-        draggable.dispatchEvent(new DragEvent('dragend', { bubbles: true, dataTransfer }));
+        // Simulate drag-and-drop using mouse events
+        cy.wrap($pieChart)
+          .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
+        cy.wait(100);
+        cy.wrap($section)
+          .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
+          .trigger('mouseup', { force: true });
+        cy.wait(200);
       });
     });
     return this;
