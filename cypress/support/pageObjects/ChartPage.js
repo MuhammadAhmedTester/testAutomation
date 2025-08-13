@@ -71,8 +71,8 @@ class ChartPage {
     cy.wait(500);
 
     // Ensure Pie Chart is visible and interactable
-    cy.get('[data-testid="Pie Chart"]').scrollIntoView().should('be.visible').then($pieChart => {
-      cy.get('[aria-label="layout_section1"]').scrollIntoView().should('be.visible').then($section => {
+    cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($pieChart => {
+      cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
         // Get center coordinates of Pie Chart and section
         const pieRect = $pieChart[0].getBoundingClientRect();
         const sectionRect = $section[0].getBoundingClientRect();
