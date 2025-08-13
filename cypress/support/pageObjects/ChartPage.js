@@ -67,20 +67,28 @@ class ChartPage {
 
   dragChartToSection() {
     // Hover over the chart icon to reveal chart options
-    cy.get('[data-testid="Chart"]').trigger('mousedown');
-    cy.wait(3000);
+    cy.get('[data-testid="Chart"]').trigger('mouseover');
+    cy.wait(500);
 
-    // Use direct DOM event dispatch for drag-and-drop
+    // Use robust drag-and-drop with DataTransfer
     cy.get('[data-testid="Chart"]').then($draggable => {
       cy.get('[aria-label="layout_section1"]').then($droppable => {
         const draggable = $draggable[0];
         const droppable = $droppable[0];
         const coords = droppable.getBoundingClientRect();
+        const dataTransfer = new DataTransfer();
 
+        // Drag start on Pie Chart
         draggable.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-        draggable.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 10, clientY: 0 }));
-        draggable.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: coords.x + 10, clientY: coords.y + 10 }));
-        draggable.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
+        draggable.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer }));
+
+        // Drag over and drop on section
+        droppable.dispatchEvent(new DragEvent('dragenter', { bubbles: true, dataTransfer }));
+        droppable.dispatchEvent(new DragEvent('dragover', { bubbles: true, dataTransfer }));
+        droppable.dispatchEvent(new DragEvent('drop', { bubbles: true, dataTransfer }));
+
+        // Drag end on Pie Chart
+        draggable.dispatchEvent(new DragEvent('dragend', { bubbles: true, dataTransfer }));
       });
     });
     return this;
