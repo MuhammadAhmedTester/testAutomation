@@ -139,19 +139,21 @@ class ChartPage {
           .scrollIntoView()
           .should("be.visible")
           .then(($section) => {
-            const accepted = cy.html5DnD($chart, $section, {
-              payload: "Chart",
-            });
-            // (optional) assert drop was accepted
-            // NOTE: html5DnD returns synchronously; if you want to assert, wrap in cy.then
-            cy.then(() =>
-              expect(
-                accepted,
-                "drop was accepted (preventDefault called)"
-              ).to.eq(true)
+            cy.html5DnD($chart, $section, { payload: "Chart" }).then(
+              (accepted) => {
+                expect(
+                  accepted,
+                  "drop was accepted (preventDefault called)"
+                ).to.eq(true);
+              }
             );
+
+            // even better: assert the actual UI result after drop
+            // e.g., the chart appears inside section1
+            // cy.get('#section1').find('[data-testid="ChartInstance"]').should('exist');
           });
       });
+
     return this;
   }
 
