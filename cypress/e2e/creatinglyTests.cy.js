@@ -1,5 +1,6 @@
 import ChartPage from "../support/pageObjects/ChartPage";
 import "cypress-real-events/support";
+import './commands';
 
 
 describe("Chart Page Automation Tests", () => {

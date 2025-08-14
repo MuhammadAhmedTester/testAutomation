@@ -1,28 +1,38 @@
 class ChartPage {
   elements = {
     // Navigation and setup elements
-    templatesPanel: () => cy.get('[aria-label="Click to get the Templates of Desktop and Mobile devices."]', { timeout: 60000 }).scrollIntoView(),
-    layoutSection: () => cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
-    masterPage: () => cy.get("#MasterPage", {timeout: 60000}),
+    templatesPanel: () =>
+      cy
+        .get(
+          '[aria-label="Click to get the Templates of Desktop and Mobile devices."]',
+          { timeout: 60000 }
+        )
+        .scrollIntoView(),
+    layoutSection: () =>
+      cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
+    masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
-    container1: () => cy.get('#Container1', { timeout: 60000 }),
-    chart1: () => cy.get('#Chart1', { timeout: 60000 }),
-    propertiesTab: () => cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
-    
+    container1: () => cy.get("#Container1", { timeout: 60000 }),
+    chart1: () => cy.get("#Chart1", { timeout: 60000 }),
+    propertiesTab: () =>
+      cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
+
     // Loading and confirmation elements
     loadingMessage: () => cy.get(".text-container", { timeout: 60000 }),
-    notiflixLoadingMessage: () => cy.get("#NotiflixLoadingMessage", { timeout: 60000 }),
+    notiflixLoadingMessage: () =>
+      cy.get("#NotiflixLoadingMessage", { timeout: 60000 }),
     clearButton: () => cy.get('[aria-label="Clear"]', { timeout: 60000 }),
     confirmButton: () => cy.get("#NXConfirmButtonOk", { timeout: 60000 }),
-    
+
     // Layout section check
     layoutSectionCheck: () => cy.get("#section1.layout-style"),
-    
+
     // Chart elements
     chartsSection: () => cy.get('[data-testid="Charts"]', { timeout: 40000 }),
-    pieChartElement: () => cy.get('[data-testid="Pie Chart"]', { timeout: 40000 }),
-    placedChart: () => cy.get('#Chart1', { timeout: 40000 }),
-    
+    pieChartElement: () =>
+      cy.get('[data-testid="Pie Chart"]', { timeout: 40000 }),
+    placedChart: () => cy.get("#Chart1", { timeout: 40000 }),
+
     // Additional elements for negative tests
     allCharts: () => cy.get('[data-testid^="Chart"]'),
     focusedElement: () => cy.focused(),
@@ -37,11 +47,11 @@ class ChartPage {
 
   // Enhanced HTML5 drag-and-drop helper
   html5DragDrop(subject, target) {
-    cy.wrap(subject).then($subject => {
-      cy.wrap(target).then($target => {
+    cy.wrap(subject).then(($subject) => {
+      cy.wrap(target).then(($target) => {
         const dataTransfer = new DataTransfer();
         // Set dummy data for compatibility
-        dataTransfer.setData('text/plain', 'chart-drag');
+        dataTransfer.setData("text/plain", "chart-drag");
 
         // Get bounding rects for coordinates
         const subjectRect = $subject[0].getBoundingClientRect();
@@ -52,15 +62,45 @@ class ChartPage {
         const endY = targetRect.top + targetRect.height / 2;
 
         cy.wrap($subject)
-          .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true })
-          .trigger('dragstart', { dataTransfer, clientX: startX, clientY: startY, force: true });
+          .trigger("mousedown", {
+            button: 0,
+            clientX: startX,
+            clientY: startY,
+            force: true,
+          })
+          .trigger("dragstart", {
+            dataTransfer,
+            clientX: startX,
+            clientY: startY,
+            force: true,
+          });
         cy.wait(200);
         cy.wrap($target)
-          .trigger('dragenter', { dataTransfer, clientX: endX, clientY: endY, force: true })
-          .trigger('dragover', { dataTransfer, clientX: endX, clientY: endY, force: true })
-          .trigger('drop', { dataTransfer, clientX: endX, clientY: endY, force: true });
+          .trigger("dragenter", {
+            dataTransfer,
+            clientX: endX,
+            clientY: endY,
+            force: true,
+          })
+          .trigger("dragover", {
+            dataTransfer,
+            clientX: endX,
+            clientY: endY,
+            force: true,
+          })
+          .trigger("drop", {
+            dataTransfer,
+            clientX: endX,
+            clientY: endY,
+            force: true,
+          });
         cy.wait(100);
-        cy.wrap($subject).trigger('dragend', { dataTransfer, clientX: endX, clientY: endY, force: true });
+        cy.wrap($subject).trigger("dragend", {
+          dataTransfer,
+          clientX: endX,
+          clientY: endY,
+          force: true,
+        });
       });
     });
   }
@@ -90,21 +130,30 @@ class ChartPage {
   //   return this;
   // }
 
- dragChartToSection() {
-  cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($chart => {
-    cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
-      cy.window().then(() => {
-        const accepted = html5DragAndDrop($chart, $section, { payload: 'Chart' });
-        // optional assertion to catch "didn't prevent default on dragover"
-        expect(accepted, 'drop was accepted (preventDefault called)').to.eq(true);
+  dragChartToSection() {
+    cy.get('[data-testid="Chart"]')
+      .scrollIntoView()
+      .should("be.visible")
+      .then(($chart) => {
+        cy.get("#Artboard1 > #section1")
+          .scrollIntoView()
+          .should("be.visible")
+          .then(($section) => {
+            const accepted = cy.html5DnD($chart, $section, {
+              payload: "Chart",
+            });
+            // (optional) assert drop was accepted
+            // NOTE: html5DnD returns synchronously; if you want to assert, wrap in cy.then
+            cy.then(() =>
+              expect(
+                accepted,
+                "drop was accepted (preventDefault called)"
+              ).to.eq(true)
+            );
+          });
       });
-    });
-  });
-  return this;
-}
-
-
-
+    return this;
+  }
 
   clickContainer1() {
     this.elements.container1().click();
@@ -138,11 +187,11 @@ class ChartPage {
   // New efficient initialization method
   initializePage() {
     this.waitForPageLoad();
-    
+
     // Check for existing master page and clear if found
     cy.get("body").then(($body) => {
       const masterPageExists = $body.find("#MasterPage").length > 0;
-      
+
       if (masterPageExists) {
         cy.log("Master page found - clearing template");
         this.elements.clearButton().click({ force: true });
@@ -152,7 +201,7 @@ class ChartPage {
         cy.log("No master page found - proceeding with tests");
       }
     });
-    
+
     return this;
   }
 
@@ -174,8 +223,13 @@ class ChartPage {
   findAndDragPieChart() {
     this.hoverOverChartsSection();
     this.elements.pieChartElement().should("exist");
-    this.elements.pieChartElement().trigger("mousedown", { which: 1, button: 0 });
-    this.elements.layoutSection().trigger("mousemove").trigger("mouseup", { force: true });
+    this.elements
+      .pieChartElement()
+      .trigger("mousedown", { which: 1, button: 0 });
+    this.elements
+      .layoutSection()
+      .trigger("mousemove")
+      .trigger("mouseup", { force: true });
     this.elements.placedChart().should("exist", { timeout: 5000 });
     return this;
   }
@@ -187,15 +241,16 @@ class ChartPage {
 
   // Negative test methods
   verifyElementNotExists(selector, timeout = 5000) {
-    cy.get(selector, { timeout }).should('not.exist');
+    cy.get(selector, { timeout }).should("not.exist");
     return this;
   }
 
   performInvalidDragOperation() {
-    cy.get('body').trigger('mousedown', { which: 1, force: true });
-    this.elements.layoutSection()
-      .trigger('mousemove')
-      .trigger('mouseup', { force: true });
+    cy.get("body").trigger("mousedown", { which: 1, force: true });
+    this.elements
+      .layoutSection()
+      .trigger("mousemove")
+      .trigger("mouseup", { force: true });
     return this;
   }
 
@@ -207,19 +262,20 @@ class ChartPage {
   }
 
   dragToInvalidCoordinates() {
-    this.elements.chartIcon()
+    this.elements
+      .chartIcon()
       .scrollIntoView()
       .should("exist")
       .trigger("mousedown", { which: 1, force: true });
 
-    cy.get('body').trigger("mousemove", { clientX: 9999, clientY: 9999 });
-    cy.get('body').trigger("mouseup", { force: true });
+    cy.get("body").trigger("mousemove", { clientX: 9999, clientY: 9999 });
+    cy.get("body").trigger("mouseup", { force: true });
     return this;
   }
 
   // Edge case methods
   simulateSlowNetwork(delay = 2000) {
-    cy.intercept('**/*', { delay }).as('slowNetwork');
+    cy.intercept("**/*", { delay }).as("slowNetwork");
     return this;
   }
 
@@ -260,47 +316,48 @@ class ChartPage {
   }
 
   performRapidMouseMovements() {
-    this.elements.chartIcon()
-      .trigger('mouseover')
-      .trigger('mouseout')
-      .trigger('mouseover')
-      .trigger('mouseout')
-      .trigger('mouseover');
+    this.elements
+      .chartIcon()
+      .trigger("mouseover")
+      .trigger("mouseout")
+      .trigger("mouseover")
+      .trigger("mouseout")
+      .trigger("mouseover");
     return this;
   }
 
   testKeyboardNavigation(tabCount = 3) {
     for (let i = 0; i < tabCount; i++) {
-      cy.get('body').tab();
+      cy.get("body").tab();
     }
     return this;
   }
 
   // Validation methods
   verifyPageStability() {
-    this.elements.templatesPanel().should('exist');
-    this.elements.chartIcon().should('be.visible');
+    this.elements.templatesPanel().should("exist");
+    this.elements.chartIcon().should("be.visible");
     return this;
   }
 
   verifyMultipleChartsExist(expectedCount = 3) {
-    this.elements.allCharts().should('have.length.at.least', expectedCount);
+    this.elements.allCharts().should("have.length.at.least", expectedCount);
     return this;
   }
 
   verifyChartRemoved() {
-    this.elements.placedChart().should('not.exist');
+    this.elements.placedChart().should("not.exist");
     return this;
   }
 
   verifyFocusManagement() {
-    this.elements.focusedElement().should('exist');
+    this.elements.focusedElement().should("exist");
     return this;
   }
 
   // Network simulation methods
   simulateNetworkTimeout(endpoint, delay = 10000) {
-    cy.intercept('GET', endpoint, { delay }).as('networkTimeout');
+    cy.intercept("GET", endpoint, { delay }).as("networkTimeout");
     return this;
   }
 
@@ -310,4 +367,4 @@ class ChartPage {
   }
 }
 
-export default ChartPage; 
+export default ChartPage;
