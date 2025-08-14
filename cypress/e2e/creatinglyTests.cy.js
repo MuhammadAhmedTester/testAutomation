@@ -1,4 +1,6 @@
 import ChartPage from "../support/pageObjects/ChartPage";
+import "cypress-real-events/support";
+
 
 describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
