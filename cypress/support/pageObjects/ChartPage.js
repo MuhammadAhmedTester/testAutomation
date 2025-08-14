@@ -90,12 +90,19 @@ class ChartPage {
   //   return this;
   // }
 
-  dragChartToSection() {
-  cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').realMouseDown();
-  cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').realMouseMove(1, 1, { position: 'center' });
-  cy.get('#Artboard1 > #section1').realMouseUp();
+ dragChartToSection() {
+  cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($chart => {
+    cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
+      cy.window().then(() => {
+        const accepted = html5DragAndDrop($chart, $section, { payload: 'Chart' });
+        // optional assertion to catch "didn't prevent default on dragover"
+        expect(accepted, 'drop was accepted (preventDefault called)').to.eq(true);
+      });
+    });
+  });
   return this;
 }
+
 
 
 
