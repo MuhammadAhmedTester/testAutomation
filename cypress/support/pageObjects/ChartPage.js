@@ -91,24 +91,41 @@ class ChartPage {
   // }
 
   dragChartToSection() {
-  const dataTransfer = new DataTransfer();
+  cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($from => {
+    const fr = $from[0].getBoundingClientRect();
+    const start = { x: fr.left + fr.width/2, y: fr.top + fr.height/2 };
 
-  cy.get('[data-testid="Chart"]')
-    .scrollIntoView()
-    .should('be.visible')
-    .trigger('dragstart', { dataTransfer, force: true });
+    cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($to => {
+      const tr = $to[0].getBoundingClientRect();
+      const end = { x: tr.left + tr.width/2, y: tr.top + tr.height/2 };
 
-  cy.get('#Artboard1 > #section1')
-    .scrollIntoView()
-    .should('be.visible')
-    .trigger('dragenter', { dataTransfer, force: true })
-    .trigger('dragover',  { dataTransfer, force: true })
-    .trigger('drop',      { dataTransfer, force: true });
+      // press down on the source
+      cy.wrap($from).trigger('pointerdown', {
+        pointerId: 1, button: 0, buttons: 1,
+        clientX: start.x, clientY: start.y, force: true
+      });
 
-  cy.get('[data-testid="Chart"]').trigger('dragend', { dataTransfer, force: true });
+      // a few moves to simulate drag threshold
+      const mid1 = { x: (start.x*2+end.x)/3, y: (start.y*2+end.y)/3 };
+      const mid2 = { x: (start.x+end.x*2)/3, y: (start.y+end.y*2)/3 };
+
+      cy.document().trigger('pointermove', { pointerId: 1, buttons: 1, clientX: mid1.x, clientY: mid1.y, force: true });
+      cy.document().trigger('pointermove', { pointerId: 1, buttons: 1, clientX: mid2.x, clientY: mid2.y, force: true });
+      cy.document().trigger('pointermove', { pointerId: 1, buttons: 1, clientX: end.x,  clientY: end.y,  force: true });
+
+      // let the target know we're over it
+      cy.wrap($to)
+        .trigger('pointerenter', { pointerId: 1, buttons: 1, clientX: end.x, clientY: end.y, force: true })
+        .trigger('pointerover',  { pointerId: 1, buttons: 1, clientX: end.x, clientY: end.y, force: true });
+
+      // drop
+      cy.wrap($to).trigger('pointerup', { pointerId: 1, button: 0, clientX: end.x, clientY: end.y, force: true });
+    });
+  });
 
   return this;
 }
+
 
   clickContainer1() {
     this.elements.container1().click();
