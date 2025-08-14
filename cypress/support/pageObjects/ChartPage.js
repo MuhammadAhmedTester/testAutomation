@@ -65,34 +65,50 @@ class ChartPage {
     });
   }
 
+  // dragChartToSection() {
+  //   // Drag the chart icon itself to the section
+  //   cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($chartIcon => {
+  //     cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
+  //       // Get center coordinates of chart icon and section
+  //       const iconRect = $chartIcon[0].getBoundingClientRect();
+  //       const sectionRect = $section[0].getBoundingClientRect();
+  //       const startX = iconRect.left + iconRect.width / 2;
+  //       const startY = iconRect.top + iconRect.height / 2;
+  //       const endX = sectionRect.left + sectionRect.width / 2;
+  //       const endY = sectionRect.top + sectionRect.height / 2;
+
+  //       // Simulate drag-and-drop using mouse events
+  //       cy.wrap($chartIcon)
+  //         .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
+  //       cy.wait(100);
+  //       cy.wrap($section)
+  //         .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
+  //         .trigger('mouseup', { force: true });
+  //       cy.wait(200);
+  //     });
+  //   });
+  //   return this;
+  // }
+
   dragChartToSection() {
-    // Hover over the chart icon to reveal chart options
-    cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').trigger('mouseover');
-    cy.wait(500);
+  const dataTransfer = new DataTransfer();
 
-    // Ensure Pie Chart is visible and interactable
-    cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($pieChart => {
-      cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
-        // Get center coordinates of Pie Chart and section
-        const pieRect = $pieChart[0].getBoundingClientRect();
-        const sectionRect = $section[0].getBoundingClientRect();
-        const startX = pieRect.left + pieRect.width / 2;
-        const startY = pieRect.top + pieRect.height / 2;
-        const endX = sectionRect.left + sectionRect.width / 2;
-        const endY = sectionRect.top + sectionRect.height / 2;
+  cy.get('[data-testid="Chart"]')
+    .scrollIntoView()
+    .should('be.visible')
+    .trigger('dragstart', { dataTransfer, force: true });
 
-        // Simulate drag-and-drop using mouse events
-        cy.wrap($pieChart)
-          .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
-        cy.wait(100);
-        cy.wrap($section)
-          .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
-          .trigger('mouseup', { force: true });
-        cy.wait(200);
-      });
-    });
-    return this;
-  }
+  cy.get('#Artboard1 > #section1')
+    .scrollIntoView()
+    .should('be.visible')
+    .trigger('dragenter', { dataTransfer, force: true })
+    .trigger('dragover',  { dataTransfer, force: true })
+    .trigger('drop',      { dataTransfer, force: true });
+
+  cy.get('[data-testid="Chart"]').trigger('dragend', { dataTransfer, force: true });
+
+  return this;
+}
 
   clickContainer1() {
     this.elements.container1().click();
