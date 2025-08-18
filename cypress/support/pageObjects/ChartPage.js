@@ -155,9 +155,11 @@ class ChartPage {
     // cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
     // this.elements.chartPaletteIcon().should("be.visible");
     // this.elements.section1().should("be.visible");
+    cy.get('#Artboard1').invoke('css', 'transform', 'none'); 
+
 
     // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
-    cy.html5DragAndDrop('[data-testid="Chart"]', '#Artboard1 > #section1');
+    cy.pointerDragTo('[data-testid="Chart"]', '#Artboard1 > #section1');
 
     // assert the real UI effect (chart rendered in section)
     this.elements.chart1().should("exist").and("be.visible");
