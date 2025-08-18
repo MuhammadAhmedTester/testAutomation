@@ -12,7 +12,7 @@ class ChartPage {
       cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
     section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
-    desktopView: () => cy.get('.fa-desktop', { timeout: 60000 }),
+    desktopView: () => cy.get(".fa-desktop", { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
@@ -133,10 +133,22 @@ class ChartPage {
   // }
 
   dragChartToSection() {
-    this.elements.chartIcon().should("be.visible");
-    this.elements.section1().should("be.visible");
-    cy.simpleDragDrop(this.elements.chartIcon(), this.elements.section1());
-    this.elements.placedChart().should("exist").and("be.visible");
+    cy.get('[data-testid="Chart"]')
+      .scrollIntoView()
+      .should("be.visible")
+      .then(($chart) => {
+        cy.get("#Artboard1 > #section1")
+          .scrollIntoView()
+          .should("be.visible")
+          .then(($section) => {
+            cy.html5DnD($chart, $section, { payload: "Chart" }).then(
+              (accepted) =>
+                expect(accepted, "drop was accepted (preventDefault)").to.eq(
+                  true
+                )
+            );
+          });
+      });
     return this;
   }
 
@@ -150,7 +162,7 @@ class ChartPage {
     cy.wait(3000);
     this.elements.confirmButton().click({ force: true });
     return this;
-  }  
+  }
 
   clickChart1() {
     this.elements.chart1().click();
