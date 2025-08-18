@@ -133,7 +133,7 @@ class ChartPage {
   // }
 
   dragChartToSection() {
-    cy.fixZoom("#Artboard1");
+    // cy.fixZoom("#Artboard1");
     this.elements.chartIcon().should("be.visible");
     this.elements.section1().should("be.visible");
 
