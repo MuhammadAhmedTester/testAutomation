@@ -94,61 +94,74 @@ Cypress.Commands.add(
   }
 );
 
-// Hybrid drag: dataTransfer + pointer path + elementFromPoint drop + commit on overlay
-Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
-  const pointerId = 1;
+/**
+ * dragFromPaletteTo({
+ *   openSelector: '[data-testid="Chart"]',        // opens the popup
+ *   fromSelector: '[data-testid="Bar Chart"]',    // the tile inside the popup
+ *   hoverOver: '#section1' | ['#section1', ...],  // optional: element(s) to hover over
+ *   toSelector: '#playground .design-area',       // final drop surface
+ *   payloads: [{type, data}]                      // optional: app-specific DataTransfer entries
+ * })
+ */
+Cypress.Commands.add(
+  "dragFromPaletteTo",
+  ({
+    openSelector,
+    fromSelector,
+    hoverOver = [],
+    toSelector,
+    payloads = [
+      { type: "application/x-item", data: "Chart" }, // replace with your app’s exact type if known
+      { type: "text/plain", data: "Chart" },
+      { type: "text", data: "Chart" },
+    ],
+  }) => {
+    const pointerId = 1;
+    const asArray = (x) => (Array.isArray(x) ? x : x ? [x] : []);
 
-  // If you learn the exact type your app uses, put it first here:
-  const payloads = opts.payloads || [
-    { type: "application/x-item", data: "Chart" }, // replace with your app's type if known
-    { type: "text/plain", data: "Chart" },
-    { type: "text", data: "Chart" },
-  ];
+    // 1) Open the palette (if needed)
+    if (openSelector) {
+      cy.get(openSelector).should("be.visible").click({ force: true });
+    }
 
-  cy.get(fromSelector)
-    .should("be.visible")
-    .then(($from) => {
-      const fr = $from[0].getBoundingClientRect();
-      const start = {
-        clientX: fr.left + fr.width / 2,
-        clientY: fr.top + fr.height / 2,
-      };
+    // 2) Pick the tile to drag
+    cy.get(fromSelector)
+      .scrollIntoView()
+      .should("be.visible")
+      .then(($from) => {
+        const fr = $from[0].getBoundingClientRect();
+        const start = {
+          clientX: fr.left + fr.width / 2,
+          clientY: fr.top + fr.height / 2,
+        };
 
-      const dt = new DataTransfer();
-      dt.effectAllowed = "all";
-      try {
-        payloads.forEach((p) => dt.setData(p.type, p.data));
-      } catch (e) {}
+        // Prepare a real DataTransfer (many builders require this)
+        const dt = new DataTransfer();
+        dt.effectAllowed = "all";
+        try {
+          payloads.forEach((p) => dt.setData(p.type, p.data));
+        } catch (e) {}
 
-      // start drag from palette item
-      cy.wrap($from)
-        .trigger("pointerdown", {
-          ...start,
-          pointerId,
-          pointerType: "mouse",
-          button: 0,
-          buttons: 1,
-          force: true,
-        })
-        .trigger("mousedown", { ...start, which: 1, buttons: 1, force: true })
-        .trigger("dragstart", { dataTransfer: dt, force: true });
+        // Start drag while holding the button
+        cy.wrap($from)
+          .trigger("pointerdown", {
+            ...start,
+            pointerId,
+            pointerType: "mouse",
+            button: 0,
+            buttons: 1,
+            force: true,
+          })
+          .trigger("mousedown", { ...start, which: 1, buttons: 1, force: true })
+          .trigger("dragstart", { dataTransfer: dt, force: true });
 
-      // move towards intended area (center of the target)
-      cy.get(toSelector)
-        .should("be.visible")
-        .then(($to) => {
-          const r = $to[0].getBoundingClientRect();
-          const end = {
-            clientX: r.left + r.width / 2,
-            clientY: r.top + r.height / 2,
-          };
-
-          const steps = 8;
+        // helper to step-move and fire hover events along the way
+        const stepMove = (fromPt, toPt, steps = 8) => {
           for (let i = 1; i <= steps; i++) {
             const x =
-              start.clientX + ((end.clientX - start.clientX) * i) / steps;
+              fromPt.clientX + ((toPt.clientX - fromPt.clientX) * i) / steps;
             const y =
-              start.clientY + ((end.clientY - start.clientY) * i) / steps;
+              fromPt.clientY + ((toPt.clientY - fromPt.clientY) * i) / steps;
 
             cy.document()
               .trigger("pointermove", {
@@ -167,9 +180,9 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
                 force: true,
               })
               .then((doc) => {
-                const hoverEl = doc.elementFromPoint(x, y);
-                if (hoverEl) {
-                  cy.wrap(hoverEl)
+                const el = doc.elementFromPoint(x, y);
+                if (el) {
+                  cy.wrap(el)
                     .trigger("dragenter", {
                       dataTransfer: dt,
                       clientX: x,
@@ -186,34 +199,70 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
               })
               .wait(10);
           }
+        };
 
-          // drop & commit on the actual overlay under the cursor
-          cy.document().then((doc) => {
-            const dropEl =
-              doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+        // 3) Hover path (activate overlays)
+        const hovers = asArray(hoverOver);
+        let current = start;
 
-            cy.wrap(dropEl)
-              .trigger("dragenter", { dataTransfer: dt, ...end, force: true })
-              .trigger("dragover", { dataTransfer: dt, ...end, force: true })
-              .trigger("drop", { dataTransfer: dt, ...end, force: true })
-              .trigger("pointerup", {
-                ...end,
-                pointerId,
-                pointerType: "mouse",
-                button: 0,
-                buttons: 0,
+        if (hovers.length) {
+          hovers.forEach((sel) => {
+            cy.get(sel)
+              .should("be.visible")
+              .then(($hover) => {
+                const r = $hover[0].getBoundingClientRect();
+                const center = {
+                  clientX: r.left + r.width / 2,
+                  clientY: r.top + r.height / 2,
+                };
+                stepMove(current, center);
+                current = center;
+              });
+          });
+        }
+
+        // 4) Final move → drop surface
+        cy.get(toSelector)
+          .should("be.visible")
+          .then(($to) => {
+            const tr = $to[0].getBoundingClientRect();
+            const end = {
+              clientX: tr.left + tr.width / 2,
+              clientY: tr.top + tr.height / 2,
+            };
+            stepMove(current, end);
+
+            // Drop on the *actual* element under the cursor (overlay), then commit
+            cy.document().then((doc) => {
+              const dropEl =
+                doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+
+              cy.wrap(dropEl)
+                .trigger("dragenter", { dataTransfer: dt, ...end, force: true })
+                .trigger("dragover", { dataTransfer: dt, ...end, force: true })
+                .trigger("drop", { dataTransfer: dt, ...end, force: true })
+                .trigger("pointerup", {
+                  ...end,
+                  pointerId,
+                  pointerType: "mouse",
+                  button: 0,
+                  buttons: 0,
+                  force: true,
+                })
+                .trigger("mouseup", {
+                  ...end,
+                  which: 1,
+                  buttons: 0,
+                  force: true,
+                })
+                .trigger("click", { ...end, force: true }); // some editors require a final click
+
+              cy.wrap($from).trigger("dragend", {
+                dataTransfer: dt,
                 force: true,
-              })
-              .trigger("mouseup", { ...end, which: 1, buttons: 0, force: true })
-              .trigger("click", { ...end, force: true }) // many editors require this
-              .trigger("dblclick", { ...end, force: true }); // some require double click
-
-            // finish drag on the source for completeness
-            cy.wrap($from).trigger("dragend", {
-              dataTransfer: dt,
-              force: true,
+              });
             });
           });
-        });
-    });
-});
+      });
+  }
+);
