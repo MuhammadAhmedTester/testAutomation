@@ -157,7 +157,7 @@ class ChartPage {
     // this.elements.section1().should("be.visible");
 
     // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
-    cy.dragAndDrop('[data-testid="Chart"]', '#Artboard1 > #section1');
+    cy.html5DragAndDrop('[data-testid="Chart"]', '#Artboard1 > #section1');
 
     // assert the real UI effect (chart rendered in section)
     this.elements.chart1().should("exist").and("be.visible");

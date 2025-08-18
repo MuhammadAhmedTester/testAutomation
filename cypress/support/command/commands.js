@@ -72,20 +72,39 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('dragAndDrop', (sourceSelector, targetSelector) => {
-  const dataTransfer = new DataTransfer();
+// cypress/support/commands.js
+Cypress.Commands.add('html5DragAndDrop', (sourceSelector, targetSelector) => {
+  cy.get(sourceSelector).should('be.visible').then(($src) => {
+    const srcEl = $src[0];
+    const dataTransfer = new DataTransfer();
+    // some libs ignore empty payloads
+    dataTransfer.setData('text/plain', srcEl.id || 'drag-item');
 
-  cy.get(sourceSelector)
-    .should('be.visible')
-    .trigger('dragstart', { dataTransfer });
+    // start drag on source
+    cy.wrap($src)
+      .trigger('mousedown', { which: 1, force: true })
+      .trigger('dragstart', { dataTransfer, force: true });
 
-  cy.get(targetSelector)
-    .should('be.visible')
-    .trigger('dragover', { dataTransfer })
-    .trigger('drop', { dataTransfer });
+    // compute target center and send full event sequence
+    cy.get(targetSelector).should('be.visible').then(($tgt) => {
+      const tgtEl = $tgt[0];
+      const rect = tgtEl.getBoundingClientRect();
+      const center = {
+        clientX: rect.left + rect.width / 2,
+        clientY: rect.top + rect.height / 2,
+      };
 
-  cy.get(sourceSelector).trigger('dragend', { dataTransfer });
+      cy.wrap($tgt)
+        .trigger('dragenter', { dataTransfer, ...center, force: true })
+        .trigger('dragover',  { dataTransfer, ...center, force: true })
+        .trigger('drop',      { dataTransfer, ...center, force: true });
+
+      // end drag on source (prevents sticky ghost)
+      cy.wrap($src).trigger('dragend', { dataTransfer, force: true });
+    });
+  });
 });
+
 
 
 
