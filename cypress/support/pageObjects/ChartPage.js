@@ -13,7 +13,7 @@ class ChartPage {
     masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
     section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
     desktopView: () => cy.get(".fa-desktop", { timeout: 60000 }),
-    chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
+    chartPaletteIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
     propertiesTab: () =>
@@ -132,26 +132,37 @@ class ChartPage {
   //   return this;
   // }
 
+  // dragChartToSection() {
+  //   cy.get('[data-testid="Chart"]')
+  //     .scrollIntoView()
+  //     .should("be.visible")
+  //     .then(($chart) => {
+  //       cy.get("#Artboard1 > #section1")
+  //         .scrollIntoView()
+  //         .should("be.visible")
+  //         .then(($section) => {
+  //           cy.html5DnD($chart, $section, { payload: "Chart" }).then(
+  //             (accepted) =>
+  //               expect(accepted, "drop was accepted (preventDefault)").to.eq(
+  //                 true
+  //               )
+  //           );
+  //         });
+  //     });
+  //   return this;
+  // }
   dragChartToSection() {
-    cy.get('[data-testid="Chart"]')
-      .scrollIntoView()
-      .should("be.visible")
-      .then(($chart) => {
-        cy.get("#Artboard1 > #section1")
-          .scrollIntoView()
-          .should("be.visible")
-          .then(($section) => {
-            cy.html5DnD($chart, $section, { payload: "Chart" }).then(
-              (accepted) =>
-                expect(accepted, "drop was accepted (preventDefault)").to.eq(
-                  true
-                )
-            );
-          });
-      });
+    cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
+    this.elements.chartPaletteIcon().should("be.visible");
+    this.elements.section1().should("be.visible");
+
+    cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
+
+    // assert the real UI effect (chart rendered in section)
+    this.elements.chart1().should("exist").and("be.visible");
     return this;
   }
-
+  
   clickContainer1() {
     this.elements.container1().click();
     return this;
