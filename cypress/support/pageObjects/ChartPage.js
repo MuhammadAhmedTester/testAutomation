@@ -152,17 +152,18 @@ class ChartPage {
   //   return this;
   // }
   dragChartToSection() {
-    cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
+    // cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
     this.elements.chartPaletteIcon().should("be.visible");
     this.elements.section1().should("be.visible");
 
-    cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
+    // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
+    cy.dragAndDrop(this.elements.chartPaletteIcon(), this.elements.section1());
 
     // assert the real UI effect (chart rendered in section)
     this.elements.chart1().should("exist").and("be.visible");
     return this;
   }
-  
+
   clickContainer1() {
     this.elements.container1().click();
     return this;
