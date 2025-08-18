@@ -152,6 +152,7 @@ class ChartPage {
   chooseDesktopView() {
     this.elements.desktopView().click();
     cy.wait(3000);
+    this.elements.confirmButton().click({ force: true });
     return this;
   }  
 
