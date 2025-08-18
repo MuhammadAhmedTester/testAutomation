@@ -11,6 +11,7 @@ class ChartPage {
     layoutSection: () =>
       cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
+    section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
@@ -131,23 +132,14 @@ class ChartPage {
   // }
 
   dragChartToSection() {
-    cy.get('[data-testid="Chart"]')
-      .scrollIntoView()
-      .should("be.visible")
-      .then(($chart) => {
-        cy.get("#Artboard1 > #section1")
-          .scrollIntoView()
-          .should("be.visible")
-          .then(($section) => {
-            cy.html5DnD($chart, $section, { payload: "Chart" }).then(
-              (accepted) =>
-                expect(accepted, "drop was accepted (preventDefault)").to.eq(
-                  true
-                )
-            );
-          });
-      });
+    cy.fixZoom("#Artboard1");
+    this.elements.chartPaletteIcon().should("be.visible");
+    this.elements.section1().should("be.visible");
 
+    cy.drag(this.elements.chartIcon(), this.elements.section1());
+
+    // assert the real UI effect (chart rendered in section)
+    this.elements.placedChart().should("exist").and("be.visible");
     return this;
   }
 
