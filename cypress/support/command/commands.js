@@ -1,5 +1,5 @@
 
-// Fix: handle both jQuery objects and DOM elements
+// HTML5 drag-and-drop technique using DataTransfer
 Cypress.Commands.add('simpleDragDrop', (fromSelOrEl, toSelOrEl) => {
   const getEl = v => Cypress.dom.isJquery(v) ? v[0] : v;
   return cy.get(fromSelOrEl).then($from => {
@@ -7,19 +7,36 @@ Cypress.Commands.add('simpleDragDrop', (fromSelOrEl, toSelOrEl) => {
       const fromEl = getEl($from);
       const toEl = getEl($to);
       const doc = fromEl.ownerDocument;
-      const fr = fromEl.getBoundingClientRect();
-      const tr = toEl.getBoundingClientRect();
-      const start = { x: fr.left + fr.width / 2, y: fr.top + fr.height / 2 };
-      const end   = { x: tr.left + tr.width / 2, y: tr.top + tr.height / 2 };
-      fromEl.dispatchEvent(new PointerEvent('pointerdown', {
-        bubbles: true, pointerId: 1, button: 0, buttons: 1,
-        clientX: start.x, clientY: start.y
+      const dataTransfer = new DataTransfer();
+      dataTransfer.setData('text/plain', 'chart-drag');
+      // Drag start
+      fromEl.dispatchEvent(new DragEvent('dragstart', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer
       }));
-      doc.dispatchEvent(new PointerEvent('pointermove', {
-        bubbles: true, pointerId: 1, buttons: 1, clientX: end.x, clientY: end.y
+      // Drag enter/over
+      toEl.dispatchEvent(new DragEvent('dragenter', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer
       }));
-      toEl.dispatchEvent(new PointerEvent('pointerup', {
-        bubbles: true, pointerId: 1, button: 0, clientX: end.x, clientY: end.y
+      toEl.dispatchEvent(new DragEvent('dragover', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer
+      }));
+      // Drop
+      toEl.dispatchEvent(new DragEvent('drop', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer
+      }));
+      // Drag end
+      fromEl.dispatchEvent(new DragEvent('dragend', {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer
       }));
       return cy.wrap(true, { log: false });
     });
