@@ -15,6 +15,7 @@ describe("Chart Page Automation Tests", () => {
         "Accept-Encoding": "identity",
       },
     });
+
     
     // Wait for page to load completely
     chartPage.waitForPageLoad();
@@ -32,6 +33,8 @@ describe("Chart Page Automation Tests", () => {
         cy.log("No master page found - proceeding with tests");
       }
     });
+
+    chartPage.chooseDesktopView();
   });
 
   describe("Chart Workflow - Happy Path", () => {
