@@ -4,28 +4,27 @@ Cypress.Commands.add(
   (fromEl, toEl, { payload = "Chart", steps = 8 } = {}) => {
     const doc = fromEl[0].ownerDocument;
 
-    // Use one DataTransfer for the whole gesture
-    const dt = new DataTransfer();
-    // Seed multiple types – many apps check these
-    dt.setData("text/plain", String(payload));
-    dt.setData("text/html", <div>${String(payload)}</div>);
-    dt.setData("text/uri-list", "about:blank");
+    // Use constructors from the AUT's window
+    const DataTransferCtor = doc.defaultView.DataTransfer || DataTransfer;
+    const DragEventCtor    = doc.defaultView.DragEvent    || DragEvent;
+    const MouseEventCtor   = doc.defaultView.MouseEvent   || MouseEvent;
 
-    // If your app needs a custom type, add it here too:
-    dt.setData("application/x-creatingly", JSON.stringify({ kind: "chart" }));
+    // One DataTransfer for the whole gesture
+    const dt = new DataTransferCtor();
+    dt.setData("text/plain", String(payload));
+    dt.setData("text/html",  `<div>${String(payload)}</div>`);   // <-- fixed (string, not JSX)
+    dt.setData("text/uri-list", "about:blank");
+    // Optional custom type if your app expects it:
+    // dt.setData("application/x-creatingly", JSON.stringify({ kind: "chart" }));
     dt.effectAllowed = "copyMove";
+
     const rectFrom = fromEl[0].getBoundingClientRect();
-    const rectTo = toEl[0].getBoundingClientRect();
-    const start = {
-      x: rectFrom.left + rectFrom.width / 2,
-      y: rectFrom.top + rectFrom.height / 2,
-    };
-    const end = {
-      x: rectTo.left + rectTo.width / 2,
-      y: rectTo.top + rectTo.height / 2,
-    };
+    const rectTo   = toEl[0].getBoundingClientRect();
+    const start = { x: rectFrom.left + rectFrom.width / 2, y: rectFrom.top + rectFrom.height / 2 };
+    const end   = { x: rectTo.left   + rectTo.width  / 2,  y: rectTo.top  + rectTo.height  / 2  };
+
     const fire = (el, type, opts = {}) => {
-      const ev = new DragEvent(type, {
+      const ev = new DragEventCtor(type, {
         bubbles: true,
         cancelable: true,
         composed: true,
@@ -38,20 +37,16 @@ Cypress.Commands.add(
       return ev;
     };
 
-    // Some UIs put the drag handle on a child; prefer that if present
-    const dragHandle =
-      fromEl[0].querySelector('[draggable="true"]') || fromEl[0];
+    // Prefer a child handle if draggable is on a child
+    const dragHandle = fromEl[0].querySelector('[draggable="true"]') || fromEl[0];
+
     // start
-    dragHandle.dispatchEvent(
-      new MouseEvent("mousedown", {
-        bubbles: true,
-        clientX: start.x,
-        clientY: start.y,
-        buttons: 1,
-      })
-    );
+    dragHandle.dispatchEvent(new MouseEventCtor("mousedown", {
+      bubbles: true, clientX: start.x, clientY: start.y, buttons: 1
+    }));
     fire(dragHandle, "dragstart", { clientX: start.x, clientY: start.y });
-    // walk across the page so any hover/guard logic runs
+
+    // walk across (helps libs that require movement)
     for (let i = 1; i <= steps; i++) {
       const t = i / (steps + 1);
       const x = start.x + (end.x - start.x) * t;
@@ -60,28 +55,20 @@ Cypress.Commands.add(
       fire(under, "dragover", { clientX: x, clientY: y });
     }
 
-    // final target = element actually under the drop point (not just the wrapper you passed)
+    // drop on the element actually under the cursor
     const finalTarget = doc.elementFromPoint(end.x, end.y) || toEl[0];
     fire(finalTarget, "dragenter", { clientX: end.x, clientY: end.y });
-    const overEv = fire(finalTarget, "dragover", {
-      clientX: end.x,
-      clientY: end.y,
-    });
-    const dropEv = fire(finalTarget, "drop", {
-      clientX: end.x,
-      clientY: end.y,
-    });
-    dragHandle.dispatchEvent(
-      new MouseEvent("mouseup", {
-        bubbles: true,
-        clientX: end.x,
-        clientY: end.y,
-      })
-    );
+    const overEv = fire(finalTarget, "dragover", { clientX: end.x, clientY: end.y });
+    const dropEv = fire(finalTarget, "drop",     { clientX: end.x, clientY: end.y });
+
+    dragHandle.dispatchEvent(new MouseEventCtor("mouseup", {
+      bubbles: true, clientX: end.x, clientY: end.y
+    }));
     fire(dragHandle, "dragend", { clientX: end.x, clientY: end.y });
 
-    // Yield true if either dragover or drop was prevented (most libs use dragover)
+    // Yield a boolean so you can assert acceptance if you want
     const accepted = !!(overEv.defaultPrevented || dropEv.defaultPrevented);
     return cy.wrap(accepted, { log: false });
   }
 );
+
