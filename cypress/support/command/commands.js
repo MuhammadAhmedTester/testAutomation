@@ -94,62 +94,49 @@ Cypress.Commands.add(
   }
 );
 
-// cypress/support/commands.js
-// Robust pointer-based drag (for Angular CDK / custom canvases / non-HTML5 DnD)
-Cypress.Commands.add('smartDragTo', (fromSelector, toSelector) => {
+
+Cypress.Commands.add('placeFromPalette', (fromSelector, toSelector) => {
+  const pointerId = 1;
+
   cy.get(fromSelector).should('be.visible').then(($from) => {
-    const startRect = $from[0].getBoundingClientRect();
-    const start = { clientX: startRect.left + startRect.width / 2, clientY: startRect.top + startRect.height / 2 };
+    const f = $from[0].getBoundingClientRect();
+    const start = { clientX: f.left + f.width / 2, clientY: f.top + f.height / 2 };
 
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData('text/plain', 'chart'); // some libs ignore empty payloads
-
-    // start drag
+    // Start "drag" from the palette item
     cy.wrap($from)
-      .trigger('pointerdown', { ...start, button: 0, force: true })
-      .trigger('mousedown',    { ...start, which: 1,  buttons: 1, force: true });
+      .trigger('pointerdown', { ...start, pointerId, pointerType: 'mouse', button: 0, buttons: 1, force: true })
+      .trigger('mousedown',    { ...start, which: 1, buttons: 1, force: true });
 
-    // compute end (center of intended drop area)
+    // Target center
     cy.get(toSelector).should('be.visible').then(($to) => {
       const r = $to[0].getBoundingClientRect();
       const end = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
 
-      // step through the path so hover/drag logic can run
-      const steps = 6;
+      // Step across so hover logic / overlays activate
+      const steps = 8;
       for (let i = 1; i <= steps; i++) {
         const x = start.clientX + ((end.clientX - start.clientX) * i) / steps;
         const y = start.clientY + ((end.clientY - start.clientY) * i) / steps;
 
         cy.document()
-          .trigger('pointermove', { clientX: x, clientY: y, force: true })
-          .trigger('mousemove',   { clientX: x, clientY: y, force: true })
-          .then((doc) => {
-            const el = doc.elementFromPoint(x, y);
-            if (el) {
-              cy.wrap(el)
-                .trigger('dragenter', { dataTransfer, clientX: x, clientY: y, force: true })
-                .trigger('dragover',  { dataTransfer, clientX: x, clientY: y, force: true });
-            }
-          });
+          .trigger('pointermove', { clientX: x, clientY: y, pointerId, pointerType: 'mouse', buttons: 1, force: true })
+          .trigger('mousemove',   { clientX: x, clientY: y, which: 1, buttons: 1, force: true })
+          .wait(10); // tiny delay helps some drag sensors
       }
 
-      // drop on the *actual* node under the cursor (not just #section1)
+      // Release
+      cy.document()
+        .trigger('pointerup', { ...end, pointerId, pointerType: 'mouse', button: 0, buttons: 0, force: true })
+        .trigger('mouseup',   { ...end, which: 1, buttons: 0, force: true });
+
+      // Commit placement: click the *actual* node under the cursor
       cy.document().then((doc) => {
-        const targetEl = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
-
-        cy.wrap(targetEl)
-          .trigger('dragenter', { dataTransfer, ...end, force: true })
-          .trigger('dragover',  { dataTransfer, ...end, force: true })
-          .trigger('drop',      { dataTransfer, ...end, force: true })
-          .trigger('pointerup', { ...end, button: 0, force: true })
-          .trigger('mouseup',   { ...end, which: 1,  force: true });
-
-        // also end on document to clear any global drag state
-        cy.document()
-          .trigger('pointerup', { ...end, button: 0, force: true })
-          .trigger('mouseup',   { ...end, which: 1,  force: true });
+        const el = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+        cy.wrap(el)
+          .trigger('click', { ...end, force: true }); // many builders place on click
       });
     });
   });
 });
+
 

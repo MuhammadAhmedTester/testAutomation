@@ -159,7 +159,7 @@ class ChartPage {
 
 
     // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
-    cy.smartDragTo('[data-testid="Chart"]', '#Artboard1 > #section1');
+    cy.placeFromPalette('[data-testid="Chart"]', '#Artboard1 > #section1');
 
     // assert the real UI effect (chart rendered in section)
     this.elements.chart1().should("exist").and("be.visible");
