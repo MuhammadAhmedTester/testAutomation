@@ -133,7 +133,7 @@ class ChartPage {
 
   dragChartToSection() {
     cy.fixZoom("#Artboard1");
-    this.elements.chartPaletteIcon().should("be.visible");
+    this.elements.chartIcon().should("be.visible");
     this.elements.section1().should("be.visible");
 
     cy.drag(this.elements.chartIcon(), this.elements.section1());
