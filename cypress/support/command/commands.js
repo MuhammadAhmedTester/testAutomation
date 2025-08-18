@@ -72,10 +72,10 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add('dragAndDrop', { prevSubject: 'element' }, (subject, targetSelector) => {
+Cypress.Commands.add('dragAndDrop', (sourceSelector, targetSelector) => {
   const dataTransfer = new DataTransfer();
 
-  cy.wrap(subject)
+  cy.get(sourceSelector)
     .should('be.visible')
     .trigger('dragstart', { dataTransfer });
 
@@ -84,7 +84,8 @@ Cypress.Commands.add('dragAndDrop', { prevSubject: 'element' }, (subject, target
     .trigger('dragover', { dataTransfer })
     .trigger('drop', { dataTransfer });
 
-  cy.wrap(subject).trigger('dragend', { dataTransfer });
+  cy.get(sourceSelector).trigger('dragend', { dataTransfer });
 });
+
 
 
