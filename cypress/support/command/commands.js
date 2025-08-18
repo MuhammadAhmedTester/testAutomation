@@ -96,45 +96,60 @@ Cypress.Commands.add(
 
 // cypress/support/commands.js
 // Robust pointer-based drag (for Angular CDK / custom canvases / non-HTML5 DnD)
-Cypress.Commands.add("pointerDragTo", (fromSelector, toSelector) => {
-  cy.get(fromSelector)
-    .should("be.visible")
-    .then(($from) => {
-      const f = $from[0].getBoundingClientRect();
-      const start = {
-        clientX: f.left + f.width / 2,
-        clientY: f.top + f.height / 2,
-      };
+Cypress.Commands.add('smartDragTo', (fromSelector, toSelector) => {
+  cy.get(fromSelector).should('be.visible').then(($from) => {
+    const startRect = $from[0].getBoundingClientRect();
+    const start = { clientX: startRect.left + startRect.width / 2, clientY: startRect.top + startRect.height / 2 };
 
-      // Start drag
-      cy.wrap($from)
-        .trigger("pointerdown", { ...start, button: 0, force: true })
-        .trigger("mousedown", { ...start, which: 1, force: true });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'chart'); // some libs ignore empty payloads
 
-      // Small move to exceed drag threshold
-      const kick = { clientX: start.clientX + 10, clientY: start.clientY + 10 };
-      cy.document()
-        .trigger("pointermove", { ...kick, force: true })
-        .trigger("mousemove", { ...kick, force: true });
+    // start drag
+    cy.wrap($from)
+      .trigger('pointerdown', { ...start, button: 0, force: true })
+      .trigger('mousedown',    { ...start, which: 1,  buttons: 1, force: true });
 
-      // Move to center of drop target
-      cy.get(toSelector)
-        .should("be.visible")
-        .then(($to) => {
-          const t = $to[0].getBoundingClientRect();
-          const end = {
-            clientX: t.left + t.width / 2,
-            clientY: t.top + t.height / 2,
-          };
+    // compute end (center of intended drop area)
+    cy.get(toSelector).should('be.visible').then(($to) => {
+      const r = $to[0].getBoundingClientRect();
+      const end = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
 
-          cy.document()
-            .trigger("pointermove", { ...end, force: true })
-            .trigger("mousemove", { ...end, force: true });
+      // step through the path so hover/drag logic can run
+      const steps = 6;
+      for (let i = 1; i <= steps; i++) {
+        const x = start.clientX + ((end.clientX - start.clientX) * i) / steps;
+        const y = start.clientY + ((end.clientY - start.clientY) * i) / steps;
 
-          // Drop
-          cy.wrap($to)
-            .trigger("pointerup", { ...end, button: 0, force: true })
-            .trigger("mouseup", { ...end, which: 1, force: true });
-        });
+        cy.document()
+          .trigger('pointermove', { clientX: x, clientY: y, force: true })
+          .trigger('mousemove',   { clientX: x, clientY: y, force: true })
+          .then((doc) => {
+            const el = doc.elementFromPoint(x, y);
+            if (el) {
+              cy.wrap(el)
+                .trigger('dragenter', { dataTransfer, clientX: x, clientY: y, force: true })
+                .trigger('dragover',  { dataTransfer, clientX: x, clientY: y, force: true });
+            }
+          });
+      }
+
+      // drop on the *actual* node under the cursor (not just #section1)
+      cy.document().then((doc) => {
+        const targetEl = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+
+        cy.wrap(targetEl)
+          .trigger('dragenter', { dataTransfer, ...end, force: true })
+          .trigger('dragover',  { dataTransfer, ...end, force: true })
+          .trigger('drop',      { dataTransfer, ...end, force: true })
+          .trigger('pointerup', { ...end, button: 0, force: true })
+          .trigger('mouseup',   { ...end, which: 1,  force: true });
+
+        // also end on document to clear any global drag state
+        cy.document()
+          .trigger('pointerup', { ...end, button: 0, force: true })
+          .trigger('mouseup',   { ...end, which: 1,  force: true });
+      });
     });
+  });
 });
+
