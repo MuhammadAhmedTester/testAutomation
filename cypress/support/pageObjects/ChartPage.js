@@ -133,13 +133,9 @@ class ChartPage {
   // }
 
   dragChartToSection() {
-    // cy.fixZoom("#Artboard1");
     this.elements.chartIcon().should("be.visible");
     this.elements.section1().should("be.visible");
-
-    cy.drag(this.elements.chartIcon(), this.elements.section1());
-
-    // assert the real UI effect (chart rendered in section)
+    cy.simpleDragDrop(this.elements.chartIcon(), this.elements.section1());
     this.elements.placedChart().should("exist").and("be.visible");
     return this;
   }
