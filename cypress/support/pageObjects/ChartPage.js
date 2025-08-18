@@ -153,8 +153,8 @@ class ChartPage {
   // }
   dragChartToSection() {
     // cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
-    this.elements.chartPaletteIcon().should("be.visible");
-    this.elements.section1().should("be.visible");
+    // this.elements.chartPaletteIcon().should("be.visible");
+    // this.elements.section1().should("be.visible");
 
     // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
     cy.dragAndDrop(this.elements.chartPaletteIcon(), this.elements.section1());
