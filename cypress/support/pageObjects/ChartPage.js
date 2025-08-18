@@ -12,6 +12,7 @@ class ChartPage {
       cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
     masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
     section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
+    desktopView: () => cy.get('.fa-desktop', { timeout: 60000 }),
     chartIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
@@ -147,6 +148,12 @@ class ChartPage {
     this.elements.container1().click();
     return this;
   }
+
+  chooseDesktopView() {
+    this.elements.desktopView().click();
+    cy.wait(3000);
+    return this;
+  }  
 
   clickChart1() {
     this.elements.chart1().click();
