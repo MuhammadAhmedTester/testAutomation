@@ -95,24 +95,37 @@ Cypress.Commands.add(
 );
 
 
-Cypress.Commands.add('placeFromPalette', (fromSelector, toSelector) => {
+// Hybrid: HTML5 dataTransfer + pointer/mouse path + elementFromPoint drop + commit click
+Cypress.Commands.add('dragPaletteTo', (fromSelector, toSelector, opts = {}) => {
   const pointerId = 1;
 
-  cy.get(fromSelector).should('be.visible').then(($from) => {
-    const f = $from[0].getBoundingClientRect();
-    const start = { clientX: f.left + f.width / 2, clientY: f.top + f.height / 2 };
+  // customize the payload if your app expects a specific type/key
+  const payloads = opts.payloads || [
+    { type: 'text/plain', data: 'Chart' },
+    { type: 'text', data: 'Chart' },
+    { type: 'application/x-item', data: 'Chart' },   // keep this generic; change if you know the exact type
+  ];
 
-    // Start "drag" from the palette item
+  cy.get(fromSelector).should('be.visible').then(($from) => {
+    const fr = $from[0].getBoundingClientRect();
+    const start = { clientX: fr.left + fr.width / 2, clientY: fr.top + fr.height / 2 };
+
+    // prepare DataTransfer the way palette drops expect
+    const dataTransfer = new DataTransfer();
+    dataTransfer.effectAllowed = 'all';
+    try { payloads.forEach(p => dataTransfer.setData(p.type, p.data)); } catch (e) { /* ignore */ }
+
+    // start drag (keep button held)
     cy.wrap($from)
       .trigger('pointerdown', { ...start, pointerId, pointerType: 'mouse', button: 0, buttons: 1, force: true })
-      .trigger('mousedown',    { ...start, which: 1, buttons: 1, force: true });
+      .trigger('mousedown',   { ...start, which: 1, buttons: 1, force: true })
+      .trigger('dragstart',   { dataTransfer, force: true });
 
-    // Target center
+    // move toward the intended drop area
     cy.get(toSelector).should('be.visible').then(($to) => {
-      const r = $to[0].getBoundingClientRect();
-      const end = { clientX: r.left + r.width / 2, clientY: r.top + r.height / 2 };
+      const tr = $to[0].getBoundingClientRect();
+      const end = { clientX: tr.left + tr.width / 2, clientY: tr.top + tr.height / 2 };
 
-      // Step across so hover logic / overlays activate
       const steps = 8;
       for (let i = 1; i <= steps; i++) {
         const x = start.clientX + ((end.clientX - start.clientX) * i) / steps;
@@ -121,22 +134,38 @@ Cypress.Commands.add('placeFromPalette', (fromSelector, toSelector) => {
         cy.document()
           .trigger('pointermove', { clientX: x, clientY: y, pointerId, pointerType: 'mouse', buttons: 1, force: true })
           .trigger('mousemove',   { clientX: x, clientY: y, which: 1, buttons: 1, force: true })
-          .wait(10); // tiny delay helps some drag sensors
+          .then((doc) => {
+            const hoverEl = doc.elementFromPoint(x, y);
+            if (hoverEl) {
+              cy.wrap(hoverEl)
+                .trigger('dragenter', { dataTransfer, clientX: x, clientY: y, force: true })
+                .trigger('dragover',  { dataTransfer, clientX: x, clientY: y, force: true });
+            }
+          })
+          .wait(10);
       }
 
-      // Release
-      cy.document()
-        .trigger('pointerup', { ...end, pointerId, pointerType: 'mouse', button: 0, buttons: 0, force: true })
-        .trigger('mouseup',   { ...end, which: 1, buttons: 0, force: true });
-
-      // Commit placement: click the *actual* node under the cursor
+      // drop on the real element under the cursor (overlay/canvas), not just #section1
       cy.document().then((doc) => {
-        const el = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
-        cy.wrap(el)
-          .trigger('click', { ...end, force: true }); // many builders place on click
+        const dropEl = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+
+        cy.wrap(dropEl)
+          .trigger('dragenter', { dataTransfer, ...end, force: true })
+          .trigger('dragover',  { dataTransfer, ...end, force: true })
+          .trigger('drop',      { dataTransfer, ...end, force: true });
+
+        // finish drag and release button
+        cy.wrap($from).trigger('dragend', { dataTransfer, force: true });
+        cy.document()
+          .trigger('pointerup', { ...end, pointerId, pointerType: 'mouse', button: 0, buttons: 0, force: true })
+          .trigger('mouseup',   { ...end, which: 1, buttons: 0, force: true });
+
+        // many builders require a final click to "place" the ghost
+        cy.wrap(dropEl).trigger('click', { ...end, force: true });
       });
     });
   });
 });
+
 
 
