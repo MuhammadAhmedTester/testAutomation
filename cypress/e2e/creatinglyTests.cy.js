@@ -7,6 +7,8 @@ describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
   before(() => {
+    cy.viewport(1920, 1080); 
+    cy.clearCookies(); 
     // Visit the page with proper configuration
     cy.visit("https://stg.platform.creatingly.com/apps", {
       timeout: 90000,
