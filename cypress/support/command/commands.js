@@ -94,78 +94,126 @@ Cypress.Commands.add(
   }
 );
 
-
-// Hybrid: HTML5 dataTransfer + pointer/mouse path + elementFromPoint drop + commit click
-Cypress.Commands.add('dragPaletteTo', (fromSelector, toSelector, opts = {}) => {
+// Hybrid drag: dataTransfer + pointer path + elementFromPoint drop + commit on overlay
+Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
   const pointerId = 1;
 
-  // customize the payload if your app expects a specific type/key
+  // If you learn the exact type your app uses, put it first here:
   const payloads = opts.payloads || [
-    { type: 'text/plain', data: 'Chart' },
-    { type: 'text', data: 'Chart' },
-    { type: 'application/x-item', data: 'Chart' },   // keep this generic; change if you know the exact type
+    { type: "application/x-item", data: "Chart" }, // replace with your app's type if known
+    { type: "text/plain", data: "Chart" },
+    { type: "text", data: "Chart" },
   ];
 
-  cy.get(fromSelector).should('be.visible').then(($from) => {
-    const fr = $from[0].getBoundingClientRect();
-    const start = { clientX: fr.left + fr.width / 2, clientY: fr.top + fr.height / 2 };
+  cy.get(fromSelector)
+    .should("be.visible")
+    .then(($from) => {
+      const fr = $from[0].getBoundingClientRect();
+      const start = {
+        clientX: fr.left + fr.width / 2,
+        clientY: fr.top + fr.height / 2,
+      };
 
-    // prepare DataTransfer the way palette drops expect
-    const dataTransfer = new DataTransfer();
-    dataTransfer.effectAllowed = 'all';
-    try { payloads.forEach(p => dataTransfer.setData(p.type, p.data)); } catch (e) { /* ignore */ }
+      const dt = new DataTransfer();
+      dt.effectAllowed = "all";
+      try {
+        payloads.forEach((p) => dt.setData(p.type, p.data));
+      } catch (e) {}
 
-    // start drag (keep button held)
-    cy.wrap($from)
-      .trigger('pointerdown', { ...start, pointerId, pointerType: 'mouse', button: 0, buttons: 1, force: true })
-      .trigger('mousedown',   { ...start, which: 1, buttons: 1, force: true })
-      .trigger('dragstart',   { dataTransfer, force: true });
+      // start drag from palette item
+      cy.wrap($from)
+        .trigger("pointerdown", {
+          ...start,
+          pointerId,
+          pointerType: "mouse",
+          button: 0,
+          buttons: 1,
+          force: true,
+        })
+        .trigger("mousedown", { ...start, which: 1, buttons: 1, force: true })
+        .trigger("dragstart", { dataTransfer: dt, force: true });
 
-    // move toward the intended drop area
-    cy.get(toSelector).should('be.visible').then(($to) => {
-      const tr = $to[0].getBoundingClientRect();
-      const end = { clientX: tr.left + tr.width / 2, clientY: tr.top + tr.height / 2 };
+      // move towards intended area (center of the target)
+      cy.get(toSelector)
+        .should("be.visible")
+        .then(($to) => {
+          const r = $to[0].getBoundingClientRect();
+          const end = {
+            clientX: r.left + r.width / 2,
+            clientY: r.top + r.height / 2,
+          };
 
-      const steps = 8;
-      for (let i = 1; i <= steps; i++) {
-        const x = start.clientX + ((end.clientX - start.clientX) * i) / steps;
-        const y = start.clientY + ((end.clientY - start.clientY) * i) / steps;
+          const steps = 8;
+          for (let i = 1; i <= steps; i++) {
+            const x =
+              start.clientX + ((end.clientX - start.clientX) * i) / steps;
+            const y =
+              start.clientY + ((end.clientY - start.clientY) * i) / steps;
 
-        cy.document()
-          .trigger('pointermove', { clientX: x, clientY: y, pointerId, pointerType: 'mouse', buttons: 1, force: true })
-          .trigger('mousemove',   { clientX: x, clientY: y, which: 1, buttons: 1, force: true })
-          .then((doc) => {
-            const hoverEl = doc.elementFromPoint(x, y);
-            if (hoverEl) {
-              cy.wrap(hoverEl)
-                .trigger('dragenter', { dataTransfer, clientX: x, clientY: y, force: true })
-                .trigger('dragover',  { dataTransfer, clientX: x, clientY: y, force: true });
-            }
-          })
-          .wait(10);
-      }
+            cy.document()
+              .trigger("pointermove", {
+                clientX: x,
+                clientY: y,
+                pointerId,
+                pointerType: "mouse",
+                buttons: 1,
+                force: true,
+              })
+              .trigger("mousemove", {
+                clientX: x,
+                clientY: y,
+                which: 1,
+                buttons: 1,
+                force: true,
+              })
+              .then((doc) => {
+                const hoverEl = doc.elementFromPoint(x, y);
+                if (hoverEl) {
+                  cy.wrap(hoverEl)
+                    .trigger("dragenter", {
+                      dataTransfer: dt,
+                      clientX: x,
+                      clientY: y,
+                      force: true,
+                    })
+                    .trigger("dragover", {
+                      dataTransfer: dt,
+                      clientX: x,
+                      clientY: y,
+                      force: true,
+                    });
+                }
+              })
+              .wait(10);
+          }
 
-      // drop on the real element under the cursor (overlay/canvas), not just #section1
-      cy.document().then((doc) => {
-        const dropEl = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
+          // drop & commit on the actual overlay under the cursor
+          cy.document().then((doc) => {
+            const dropEl =
+              doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
 
-        cy.wrap(dropEl)
-          .trigger('dragenter', { dataTransfer, ...end, force: true })
-          .trigger('dragover',  { dataTransfer, ...end, force: true })
-          .trigger('drop',      { dataTransfer, ...end, force: true });
+            cy.wrap(dropEl)
+              .trigger("dragenter", { dataTransfer: dt, ...end, force: true })
+              .trigger("dragover", { dataTransfer: dt, ...end, force: true })
+              .trigger("drop", { dataTransfer: dt, ...end, force: true })
+              .trigger("pointerup", {
+                ...end,
+                pointerId,
+                pointerType: "mouse",
+                button: 0,
+                buttons: 0,
+                force: true,
+              })
+              .trigger("mouseup", { ...end, which: 1, buttons: 0, force: true })
+              .trigger("click", { ...end, force: true }) // many editors require this
+              .trigger("dblclick", { ...end, force: true }); // some require double click
 
-        // finish drag and release button
-        cy.wrap($from).trigger('dragend', { dataTransfer, force: true });
-        cy.document()
-          .trigger('pointerup', { ...end, pointerId, pointerType: 'mouse', button: 0, buttons: 0, force: true })
-          .trigger('mouseup',   { ...end, which: 1, buttons: 0, force: true });
-
-        // many builders require a final click to "place" the ghost
-        cy.wrap(dropEl).trigger('click', { ...end, force: true });
-      });
+            // finish drag on the source for completeness
+            cy.wrap($from).trigger("dragend", {
+              dataTransfer: dt,
+              force: true,
+            });
+          });
+        });
     });
-  });
 });
-
-
-
