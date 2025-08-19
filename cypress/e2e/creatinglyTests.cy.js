@@ -47,7 +47,7 @@ describe("Chart Page Automation Tests", () => {
       // chartPage.dragChartToSection();
 
       // drag and drop the chart
-      cy.get('[data-testid="Chart"]').drag("#Artboard1 > #section1");
+      cy.get('[data-testid="Dropdown"]').drag("#Artboard1 > #section1");
 
       // Assert that the chart was placed successfully
       chartPage.elements.chart1().should("exist").and("be.visible");
