@@ -43,11 +43,18 @@ describe("Chart Page Automation Tests", () => {
       // Open the Templates panel to access chart components
       chartPage.openTemplatesPanel();
 
+      cy.get('#draw-drawing-panel').click();
+      cy.wait(2000); // Wait for the panel to open
+      cy.get('[name="Mobile Template9"]').click();
+
+      // Hover over the Chart icon before drag and drop
+      cy.get('[data-testid="Chart"]').trigger('mouseover');
+
       // Drag the Chart icon into section 1 to add it to the layout
       // chartPage.dragChartToSection();
 
       // drag and drop the chart
-      cy.get('[data-testid="Dropdown"]').drag("#Artboard1 > #section1", {
+      cy.get('[data-testid="Line Chart"]').drag("#Artboard1 > #section1", {
         source: { x: 50, y: 50 },
         target: { position: "top" },
         force: true,
