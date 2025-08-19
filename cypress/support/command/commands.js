@@ -95,16 +95,9 @@ Cypress.Commands.add(
 );
 
 // Hybrid drag: dataTransfer + pointer path + elementFromPoint drop + commit on overlay
+
 Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
   const pointerId = 1;
-
-  // If you learn the exact type your app uses, put it first here:
-  const payloads = opts.payloads || [
-    { type: "application/x-item", data: "Chart" }, // replace with your app's type if known
-    { type: "text/plain", data: "Chart" },
-    { type: "text", data: "Chart" },
-  ];
-
   cy.get(fromSelector)
     .should("be.visible")
     .then(($from) => {
@@ -113,14 +106,17 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
         clientX: fr.left + fr.width / 2,
         clientY: fr.top + fr.height / 2,
       };
-
       const dt = new DataTransfer();
       dt.effectAllowed = "all";
+      // Default payloads if not provided
+      const payloads = opts.payloads || [
+        { type: "application/x-item", data: "Chart" },
+        { type: "text/plain", data: "Chart" },
+        { type: "text", data: "Chart" },
+      ];
       try {
         payloads.forEach((p) => dt.setData(p.type, p.data));
       } catch (e) {}
-
-      // start drag from palette item
       cy.wrap($from)
         .trigger("pointerdown", {
           ...start,
@@ -132,8 +128,6 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
         })
         .trigger("mousedown", { ...start, which: 1, buttons: 1, force: true })
         .trigger("dragstart", { dataTransfer: dt, force: true });
-
-      // move towards intended area (center of the target)
       cy.get(toSelector)
         .should("be.visible")
         .then(($to) => {
@@ -142,14 +136,10 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
             clientX: r.left + r.width / 2,
             clientY: r.top + r.height / 2,
           };
-
           const steps = 8;
           for (let i = 1; i <= steps; i++) {
-            const x =
-              start.clientX + ((end.clientX - start.clientX) * i) / steps;
-            const y =
-              start.clientY + ((end.clientY - start.clientY) * i) / steps;
-
+            const x = start.clientX + ((end.clientX - start.clientX) * i) / steps;
+            const y = start.clientY + ((end.clientY - start.clientY) * i) / steps;
             cy.document()
               .trigger("pointermove", {
                 clientX: x,
@@ -186,12 +176,8 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
               })
               .wait(10);
           }
-
-          // drop & commit on the actual overlay under the cursor
           cy.document().then((doc) => {
-            const dropEl =
-              doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
-
+            const dropEl = doc.elementFromPoint(end.clientX, end.clientY) || $to[0];
             cy.wrap(dropEl)
               .trigger("dragenter", { dataTransfer: dt, ...end, force: true })
               .trigger("dragover", { dataTransfer: dt, ...end, force: true })
@@ -205,10 +191,8 @@ Cypress.Commands.add("dragPaletteTo", (fromSelector, toSelector, opts = {}) => {
                 force: true,
               })
               .trigger("mouseup", { ...end, which: 1, buttons: 0, force: true })
-              .trigger("click", { ...end, force: true }) // many editors require this
-              .trigger("dblclick", { ...end, force: true }); // some require double click
-
-            // finish drag on the source for completeness
+              .trigger("click", { ...end, force: true })
+              .trigger("dblclick", { ...end, force: true });
             cy.wrap($from).trigger("dragend", {
               dataTransfer: dt,
               force: true,
