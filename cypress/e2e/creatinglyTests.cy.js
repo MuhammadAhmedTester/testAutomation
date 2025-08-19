@@ -1,14 +1,14 @@
 import ChartPage from "../support/pageObjects/ChartPage";
 import "cypress-real-events/support";
-import '../support/command/commands.js';
-
+import "../support/command/commands.js";
+require("@4tw/cypress-drag-drop");
 
 describe("Chart Page Automation Tests", () => {
   const chartPage = new ChartPage();
 
   before(() => {
-    cy.viewport(1920, 1080); 
-    cy.clearCookies(); 
+    cy.viewport(1920, 1080);
+    cy.clearCookies();
     // Visit the page with proper configuration
     cy.visit("https://stg.platform.creatingly.com/apps", {
       timeout: 90000,
@@ -18,14 +18,13 @@ describe("Chart Page Automation Tests", () => {
       },
     });
 
-    
     // Wait for page to load completely
     chartPage.waitForPageLoad();
-    
+
     // Check for master page and clear if found
     cy.get("body").then(($body) => {
       const masterPageExists = $body.find("#MasterPage").length > 0;
-      
+
       if (masterPageExists) {
         cy.log("Master page found - clearing template");
         chartPage.elements.clearButton().click({ force: true });
@@ -45,10 +44,13 @@ describe("Chart Page Automation Tests", () => {
       chartPage.openTemplatesPanel();
 
       // Drag the Chart icon into section 1 to add it to the layout
-      chartPage.dragChartToSection();
+      // chartPage.dragChartToSection();
+
+      // drag and drop the chart
+      cy.get('[data-testid="Chart"]').drag("#Artboard1 > #section1");
 
       // Assert that the chart was placed successfully
-      chartPage.elements.chart1().should('exist').and('be.visible');
+      chartPage.elements.chart1().should("exist").and("be.visible");
 
       // Click on Chart1 to select the chart element
       chartPage.clickChart1();
