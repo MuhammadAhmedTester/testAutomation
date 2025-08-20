@@ -28,7 +28,7 @@ class ChartPage {
     chartCenterButton: () =>
       cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
     chartTopLeftButton: () =>
-      cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
+      cy.get(".grid-align-container > :nth-child(3)", { timeout: 60000 }),
 
     // Loading and confirmation elements
     loadingMessage: () => cy.get(".text-container", { timeout: 60000 }),
@@ -96,11 +96,11 @@ class ChartPage {
   }
 
   dragChartOutsideTheSection() {
-    this.elements.chartPaletteIcon().drag("#Playground", { timeout: 60000 });
+    this.elements.chartPaletteIcon().drag("#playground", { timeout: 60000 });
   }
 
   dragChartOnMasterPage() {
-    this.elements.chartPaletteIcon().drag("#MasterPagSection3", { timeout: 60000 });
+    this.elements.chartPaletteIcon().drag("#MasterPage > #MasterPagSection3", { timeout: 60000 });
   }
 
   positionChart() {

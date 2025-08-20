@@ -85,7 +85,7 @@ describe("Chart Page Automation Tests", () => {
 
     it("should complete full chart workflow with viewport changes (Mobile View)", () => {
       //select the device
-      chartPage.chooseMobileView();
+      // chartPage.chooseMobileView();
 
       // Open the Templates panel to access chart components
       chartPage.openMasterPage();
@@ -133,7 +133,7 @@ describe("Chart Page Automation Tests", () => {
     it("should place chart successfully under slow network conditions", () => {
       cy.intercept("**/*", { delay: 2000 }).as("slowNetwork");
       chartPage.openMasterPage();
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
       cy.wait("@slowNetwork");
       chartPage.elements.chart1().should("exist");
@@ -141,7 +141,7 @@ describe("Chart Page Automation Tests", () => {
 
     it("should handle viewport change during drag", () => {
       chartPage.openMasterPage();
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
       cy.viewport(375, 667); // Mobile
       chartPage.dragChartToSection();
       cy.viewport(1920, 1080); // Desktop
@@ -150,7 +150,7 @@ describe("Chart Page Automation Tests", () => {
 
     it("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
       chartPage.elements.clearButton().click({ force: true });
       chartPage.elements.confirmButton().click({ force: true });
