@@ -59,6 +59,7 @@ describe("Chart Page Automation Tests", () => {
         target: {position: "center"},
         force: true,
       });
+      cy.get('#Artboard1 > #section1').click();
 
       // Assert that the chart was placed successfully
       chartPage.elements.chart1().should("exist").and("be.visible");
