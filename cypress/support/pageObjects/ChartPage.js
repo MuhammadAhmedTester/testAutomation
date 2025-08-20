@@ -1,7 +1,8 @@
+require("@4tw/cypress-drag-drop");
 class ChartPage {
   elements = {
     // Navigation and setup elements
-    templatesPanel: () =>
+    masterPageButton: () =>
       cy
         .get(
           '[aria-label="Click to get the Templates of Desktop and Mobile devices."]',
@@ -9,14 +10,24 @@ class ChartPage {
         )
         .scrollIntoView(),
     layoutSection: () =>
-      cy.get('[aria-label="layout_section1"]', { timeout: 60000 }),
+      cy.get('[aria-label="layout_section1"]', {
+        timeout: 60000 ,
+        source: { x: 50, y: 50 },
+        target: {position: "center"},
+        force: true,
+      }),
     masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
     section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
     desktopView: () => cy.get(".fa-desktop", { timeout: 60000 }),
+    mobileView: () => cy.get(".fa-mobile", { timeout: 60000 }),
+    tabletView: () => cy.get(".fa-tablet", { timeout: 60000 }),
     chartPaletteIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
+    playground: () => cy.get("#Playground", { timeout: 60000 }),    
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
-    propertiesTab: () =>
+    chartCenterButton: () =>
+      cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
+    chartTopLeftButton: () =>
       cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
 
     // Loading and confirmation elements
@@ -30,9 +41,10 @@ class ChartPage {
     layoutSectionCheck: () => cy.get("#section1.layout-style"),
 
     // Chart elements
-    chartsSection: () => cy.get('[data-testid="Charts"]', { timeout: 40000 }),
     pieChartElement: () =>
       cy.get('[data-testid="Pie Chart"]', { timeout: 40000 }),
+    lineChartElement: () =>
+      cy.get('[data-testid="Line Chart"]', { timeout: 40000 }),
     placedChart: () => cy.get("#Chart1", { timeout: 40000 }),
 
     // Additional elements for negative tests
@@ -41,133 +53,9 @@ class ChartPage {
   };
 
   // Setup and navigation methods
-  openTemplatesPanel() {
-    this.elements.templatesPanel().click();
+  openMasterPage() {
+    this.elements.masterPageButton().click();
     this.elements.layoutSection().should("exist");
-    return this;
-  }
-
-  // Enhanced HTML5 drag-and-drop helper
-  html5DragDrop(subject, target) {
-    cy.wrap(subject).then(($subject) => {
-      cy.wrap(target).then(($target) => {
-        const dataTransfer = new DataTransfer();
-        // Set dummy data for compatibility
-        dataTransfer.setData("text/plain", "chart-drag");
-
-        // Get bounding rects for coordinates
-        const subjectRect = $subject[0].getBoundingClientRect();
-        const targetRect = $target[0].getBoundingClientRect();
-        const startX = subjectRect.left + subjectRect.width / 2;
-        const startY = subjectRect.top + subjectRect.height / 2;
-        const endX = targetRect.left + targetRect.width / 2;
-        const endY = targetRect.top + targetRect.height / 2;
-
-        cy.wrap($subject)
-          .trigger("mousedown", {
-            button: 0,
-            clientX: startX,
-            clientY: startY,
-            force: true,
-          })
-          .trigger("dragstart", {
-            dataTransfer,
-            clientX: startX,
-            clientY: startY,
-            force: true,
-          });
-        cy.wait(200);
-        cy.wrap($target)
-          .trigger("dragenter", {
-            dataTransfer,
-            clientX: endX,
-            clientY: endY,
-            force: true,
-          })
-          .trigger("dragover", {
-            dataTransfer,
-            clientX: endX,
-            clientY: endY,
-            force: true,
-          })
-          .trigger("drop", {
-            dataTransfer,
-            clientX: endX,
-            clientY: endY,
-            force: true,
-          });
-        cy.wait(100);
-        cy.wrap($subject).trigger("dragend", {
-          dataTransfer,
-          clientX: endX,
-          clientY: endY,
-          force: true,
-        });
-      });
-    });
-  }
-
-  // dragChartToSection() {
-  //   // Drag the chart icon itself to the section
-  //   cy.get('[data-testid="Chart"]').scrollIntoView().should('be.visible').then($chartIcon => {
-  //     cy.get('#Artboard1 > #section1').scrollIntoView().should('be.visible').then($section => {
-  //       // Get center coordinates of chart icon and section
-  //       const iconRect = $chartIcon[0].getBoundingClientRect();
-  //       const sectionRect = $section[0].getBoundingClientRect();
-  //       const startX = iconRect.left + iconRect.width / 2;
-  //       const startY = iconRect.top + iconRect.height / 2;
-  //       const endX = sectionRect.left + sectionRect.width / 2;
-  //       const endY = sectionRect.top + sectionRect.height / 2;
-
-  //       // Simulate drag-and-drop using mouse events
-  //       cy.wrap($chartIcon)
-  //         .trigger('mousedown', { button: 0, clientX: startX, clientY: startY, force: true });
-  //       cy.wait(100);
-  //       cy.wrap($section)
-  //         .trigger('mousemove', { clientX: endX, clientY: endY, force: true })
-  //         .trigger('mouseup', { force: true });
-  //       cy.wait(200);
-  //     });
-  //   });
-  //   return this;
-  // }
-
-  // dragChartToSection() {
-  //   cy.get('[data-testid="Chart"]')
-  //     .scrollIntoView()
-  //     .should("be.visible")
-  //     .then(($chart) => {
-  //       cy.get("#Artboard1 > #section1")
-  //         .scrollIntoView()
-  //         .should("be.visible")
-  //         .then(($section) => {
-  //           cy.html5DnD($chart, $section, { payload: "Chart" }).then(
-  //             (accepted) =>
-  //               expect(accepted, "drop was accepted (preventDefault)").to.eq(
-  //                 true
-  //               )
-  //           );
-  //         });
-  //     });
-  //   return this;
-  // }
-  dragChartToSection() {
-    // cy.fixZoom("#Artboard1"); // <- normalize zoom/transform
-    // this.elements.chartPaletteIcon().should("be.visible");
-    // this.elements.section1().should("be.visible");
-    cy.get('#Artboard1').invoke('css', 'transform', 'none'); 
-
-
-    // cy.drag(this.elements.chartPaletteIcon(), this.elements.section1()); // <- concise DnD
-    cy.dragPaletteTo('[data-testid="Chart"]', '#Artboard1 > #section1');
-
-    // assert the real UI effect (chart rendered in section)
-    this.elements.chart1().should("exist").and("be.visible");
-    return this;
-  }
-
-  clickContainer1() {
-    this.elements.container1().click();
     return this;
   }
 
@@ -178,13 +66,36 @@ class ChartPage {
     return this;
   }
 
+  chooseMobileView() {
+    this.elements.mobileView().click();
+    cy.wait(3000);
+    this.elements.confirmButton().click({ force: true });
+    return this;
+  }
+
+  chooseTabletView() {
+    this.elements.tabletView().click();
+    cy.wait(3000);
+    this.elements.confirmButton().click({ force: true });
+    return this;
+  }
+
   clickChart1() {
     this.elements.chart1().click();
     return this;
   }
 
-  openPropertiesTab() {
-    this.elements.propertiesTab().click();
+  dragChartToSection() {
+    this.elements.chartPaletteIcon().realDrag(this.elements.layoutSection());
+    this.elements.section1().click();
+  }
+
+  positionChart() {
+    this.elements.chartCenterButton().click();
+    cy.wait(2000); 
+    this.elements.chartTopLeftButton().click();
+    cy.wait(2000); 
+    this.elements.chartCenterButton().click();
     return this;
   }
 
@@ -229,31 +140,6 @@ class ChartPage {
     cy.wait(6000);
     this.elements.notiflixLoadingMessage().should("not.exist");
     cy.wait(6000);
-    return this;
-  }
-
-  // Chart specific methods
-  hoverOverChartsSection() {
-    this.elements.chartsSection().should("exist").trigger("mouseover");
-    return this;
-  }
-
-  findAndDragPieChart() {
-    this.hoverOverChartsSection();
-    this.elements.pieChartElement().should("exist");
-    this.elements
-      .pieChartElement()
-      .trigger("mousedown", { which: 1, button: 0 });
-    this.elements
-      .layoutSection()
-      .trigger("mousemove")
-      .trigger("mouseup", { force: true });
-    this.elements.placedChart().should("exist", { timeout: 5000 });
-    return this;
-  }
-
-  verifyChartPlaced() {
-    this.elements.placedChart().should("exist").and("be.visible");
     return this;
   }
 
