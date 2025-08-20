@@ -43,9 +43,9 @@ describe("Chart Page Automation Tests", () => {
       // Open the Templates panel to access chart components
       chartPage.openTemplatesPanel();
 
-      cy.get('#draw-drawing-panel').click();
-      cy.wait(2000); // Wait for the panel to open
-      cy.get('.right-cards > .home-card-list').eq(0).click();
+      // cy.get('#draw-drawing-panel').click();
+      // cy.wait(2000); // Wait for the panel to open
+      // cy.get('.right-cards > .home-card-list').eq(0).click();
 
       // Hover over the Chart icon before drag and drop (using real mouse event)
       cy.get('[data-testid="Chart"]').realHover();
