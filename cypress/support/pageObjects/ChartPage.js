@@ -16,7 +16,7 @@ class ChartPage {
         target: {position: "center"},
         force: true,
       }),
-    masterPage: () => cy.get("#MasterPage", { timeout: 60000 }),
+    masterPage: () => cy.get("#MasterPagSection3", { timeout: 60000 }),
     section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
     desktopView: () => cy.get(".fa-desktop", { timeout: 60000 }),
     mobileView: () => cy.get(".fa-mobile", { timeout: 60000 }),
@@ -88,6 +88,14 @@ class ChartPage {
   dragChartToSection() {
     this.elements.chartPaletteIcon().realDrag(this.elements.layoutSection());
     this.elements.section1().click();
+  }
+
+  dragChartOutsideTheSection() {
+  this.elements.chartPaletteIcon().realDrag(this.elements.playground());
+  }
+
+  dragChartOnMasterPage() {
+  this.elements.chartPaletteIcon().realDrag(this.elements.masterPage());
   }
 
   positionChart() {
