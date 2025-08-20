@@ -86,16 +86,16 @@ class ChartPage {
   }
 
   dragChartToSection() {
-    this.elements.chartPaletteIcon().realDrag(this.elements.layoutSection());
+    this.elements.chartPaletteIcon().drag(this.elements.layoutSection());
     this.elements.section1().click();
   }
 
   dragChartOutsideTheSection() {
-  this.elements.chartPaletteIcon().realDrag(this.elements.playground());
+  this.elements.chartPaletteIcon().drag(this.elements.playground());
   }
 
   dragChartOnMasterPage() {
-  this.elements.chartPaletteIcon().realDrag(this.elements.masterPage());
+  this.elements.chartPaletteIcon().drag(this.elements.masterPage());
   }
 
   positionChart() {
