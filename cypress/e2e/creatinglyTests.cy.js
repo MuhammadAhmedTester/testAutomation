@@ -45,7 +45,7 @@ describe("Chart Page Automation Tests", () => {
 
       cy.get('#draw-drawing-panel').click();
       cy.wait(2000); // Wait for the panel to open
-      cy.get('nth-child(1) > .home-card-list-body > .home-card-image-container > .home-card-img').click();
+      cy.get('.right-cards > .home-card-list').eq(0).click();
 
       // Hover over the Chart icon before drag and drop
       cy.get('[data-testid="Chart"]').trigger('mouseover');
