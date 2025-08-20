@@ -54,9 +54,9 @@ describe("Chart Page Automation Tests", () => {
       // chartPage.dragChartToSection();
 
       // drag and drop the chart
-      cy.get('[data-testid="Line Chart"]').drag("#Artboard2 > #section2", {
+      cy.get('[data-testid="Line Chart"]').drag("#Artboard1 > #section1", {
         source: { x: 50, y: 50 },
-        target: { position: "top" },
+        target: {position: "centre-left"},
         force: true,
       });
 
