@@ -45,7 +45,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.openMasterPage();
 
       // Hover over the Chart icon before drag and drop (using real mouse event)
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
 
       // drag and drop the chart
       chartPage.dragChartToSection();
@@ -68,7 +68,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.openMasterPage();
 
       // Hover over the Chart icon before drag and drop (using real mouse event)
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
 
       // drag and drop the chart
       chartPage.dragChartToSection();
@@ -91,7 +91,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.openMasterPage();
 
       // Hover over the Chart icon before drag and drop (using real mouse event)
-      chartPage.elements.chartPaletteIcon.realHover();
+      chartPage.elements.chartPaletteIcon().realHover();
 
       // drag and drop the chart
       chartPage.dragChartToSection();
