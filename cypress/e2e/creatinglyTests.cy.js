@@ -69,7 +69,7 @@ describe("Chart Page Automation Tests", () => {
 
       // Open the Properties tab to configure chart settings
       chartPage.openPropertiesTab();
-      cy.get(".grid-align-container > :nth-child(3)", { timeout: 60000 });
+      cy.get(".grid-align-container > :nth-child(3)", { timeout: 60000 }).click();
       cy.wait(3000);
       chartPage.openPropertiesTab();
 
