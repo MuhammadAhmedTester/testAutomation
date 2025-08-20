@@ -11,9 +11,9 @@ class ChartPage {
         .scrollIntoView(),
     layoutSection: () =>
       cy.get('[aria-label="layout_section1"]', {
-        timeout: 60000 ,
+        timeout: 60000,
         source: { x: 50, y: 50 },
-        target: {position: "center"},
+        target: { position: "center" },
         force: true,
       }),
     masterPage: () => cy.get("#MasterPagSection3", { timeout: 60000 }),
@@ -22,7 +22,7 @@ class ChartPage {
     mobileView: () => cy.get(".fa-mobile", { timeout: 60000 }),
     tabletView: () => cy.get(".fa-tablet", { timeout: 60000 }),
     chartPaletteIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
-    playground: () => cy.get("#Playground", { timeout: 60000 }),    
+    playground: () => cy.get("#Playground", { timeout: 60000 }),
     container1: () => cy.get("#Container1", { timeout: 60000 }),
     chart1: () => cy.get("#Chart1", { timeout: 60000 }),
     chartCenterButton: () =>
@@ -86,23 +86,28 @@ class ChartPage {
   }
 
   dragChartToSection() {
-    this.elements.chartPaletteIcon().drag(this.elements.layoutSection());
+    this.elements.chartPaletteIcon().drag('[aria-label="layout_section1"]', {
+      timeout: 60000,
+      source: { x: 50, y: 50 },
+      target: { position: "center" },
+      force: true,
+    });
     this.elements.section1().click();
   }
 
   dragChartOutsideTheSection() {
-  this.elements.chartPaletteIcon().drag(this.elements.playground());
+    this.elements.chartPaletteIcon().drag("#Playground", { timeout: 60000 });
   }
 
   dragChartOnMasterPage() {
-  this.elements.chartPaletteIcon().drag(this.elements.masterPage());
+    this.elements.chartPaletteIcon().drag("#MasterPagSection3", { timeout: 60000 });
   }
 
   positionChart() {
     this.elements.chartCenterButton().click();
-    cy.wait(2000); 
+    cy.wait(2000);
     this.elements.chartTopLeftButton().click();
-    cy.wait(2000); 
+    cy.wait(2000);
     this.elements.chartCenterButton().click();
     return this;
   }
