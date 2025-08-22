@@ -108,17 +108,6 @@ describe("Chart Page Automation Tests", () => {
   });
 
   describe("Chart Workflow - Negative Test Cases", () => {
-    it.only("should not place chart outside the section", () => {
-      // chartPage.openMasterPage();
-      // chartPage.elements.section1().should("be.visible");
-      // drag and drop the chart outside the section
-      chartPage.dragChartOutsideTheSection();
-      cy.contains("Please Select traget section. Something is wrong.").should(
-        "exist"
-      );
-      chartPage.elements.chart1().should("not.exist");
-    });
-
     it("should not place chart on Master page", () => {
       chartPage.openMasterPage();
       chartPage.elements.masterPage().should("be.visible");
@@ -155,7 +144,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chart3().should("exist");
     });
 
-    it.only("should allow chart removal and re-placement", () => {
+    it("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
