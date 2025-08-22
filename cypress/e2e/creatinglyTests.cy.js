@@ -100,7 +100,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chart2().should("exist").and("be.visible");
 
       // Click on Chart1 to select the chart element
-      chartPage.clickChart1();
+      chartPage.clickChart2();
 
       // Open the Properties tab to configure chart settings and position the chart
       chartPage.positionChart();

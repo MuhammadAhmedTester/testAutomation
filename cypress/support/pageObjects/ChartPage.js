@@ -22,7 +22,7 @@ class ChartPage {
         mobileView: () => cy.get(".fa-mobile", { timeout: 60000 }),
         tabletView: () => cy.get(".fa-tablet", { timeout: 60000 }),
         chartPaletteIcon: () => cy.get('[data-testid="Chart"]', { timeout: 60000 }),
-        playground: () => cy.get("#Playground", { timeout: 60000 }),
+        playground: () => cy.get('[name="DesignArea"]', { timeout: 60000 }),
         container1: () => cy.get("#Container1", { timeout: 60000 }),
         chart1: () => cy.get("#Chart1", { timeout: 60000 }),
         chart2: () => cy.get("#Chart2", { timeout: 60000 }),
@@ -85,6 +85,11 @@ class ChartPage {
 
     clickChart1() {
         this.elements.chart1().click();
+        return this;
+    }
+
+    clickChart2() {
+        this.elements.chart2().click();
         return this;
     }
 
