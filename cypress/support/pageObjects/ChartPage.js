@@ -16,7 +16,7 @@ class ChartPage {
                 target: { position: "center" },
                 force: true,
             }),
-        masterPage: () => cy.get("#MasterPagSection3", { timeout: 60000 }),
+        masterPage: () => cy.get('[aria-label="layout_section"]', { timeout: 60000 }),
         section1: () => cy.get("#Artboard1 > #section1", { timeout: 60000 }),
         desktopView: () => cy.get(".fa-desktop", { timeout: 60000 }),
         mobileView: () => cy.get(".fa-mobile", { timeout: 60000 }),
@@ -25,8 +25,8 @@ class ChartPage {
         playground: () => cy.get("#Playground", { timeout: 60000 }),
         container1: () => cy.get("#Container1", { timeout: 60000 }),
         chart1: () => cy.get("#Chart1", { timeout: 60000 }),
-        chart2: () => cy.get("#chart2", { timeout: 60000 }),
-        chart3: () => cy.get("#chart3", { timeout: 60000 }),
+        chart2: () => cy.get("#Chart2", { timeout: 60000 }),
+        chart3: () => cy.get("#Chart3", { timeout: 60000 }),
         deleteChart: () => cy.get('div[title="Delete Item"]', { timeout: 60000 }),
         chartCenterButton: () =>
             cy.get(".grid-align-container > :nth-child(5)", { timeout: 60000 }),
@@ -106,7 +106,7 @@ class ChartPage {
 
     dragChartOnMasterPage() {
         this.elements.chartPaletteIcon().drag("#MasterPage > #MasterPagSection3", { timeout: 60000 });
-        this.elements.section1().click();
+        this.elements.masterPage().click();
 
     }
 
