@@ -97,7 +97,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.dragChartToSection();
 
       // Assert that the chart was placed successfully
-      chartPage.elements.chart1().should("exist").and("be.visible");
+      chartPage.elements.chart2().should("exist").and("be.visible");
 
       // Click on Chart1 to select the chart element
       chartPage.clickChart1();
@@ -136,7 +136,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
       cy.wait("@slowNetwork");
-      chartPage.elements.chart1().should("exist");
+      chartPage.elements.chart3().should("exist");
     });
 
     it("should handle viewport change during drag", () => {
@@ -145,15 +145,17 @@ describe("Chart Page Automation Tests", () => {
       cy.viewport(375, 667); // Mobile
       chartPage.dragChartToSection();
       cy.viewport(1920, 1080); // Desktop
-      chartPage.elements.chart1().should("exist");
+      chartPage.elements.chart3().should("exist");
     });
 
     it("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
-      chartPage.elements.clearButton().click({ force: true });
-      chartPage.elements.confirmButton().click({ force: true });
+      // chartPage.elements.clearButton().click({ force: true });
+      // chartPage.elements.confirmButton().click({ force: true });
+      chartPage.elements.chart1.click();
+      chartPage.elements.deleteChart().click();
       chartPage.elements.chart1().should("not.exist");
       chartPage.dragChartToSection();
       chartPage.elements.chart1().should("exist");
