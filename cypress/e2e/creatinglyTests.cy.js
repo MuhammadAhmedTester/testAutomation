@@ -144,7 +144,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chart2().should("exist");
     });
 
-    it.only("should allow chart removal and re-placement", () => {
+    it("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
@@ -155,7 +155,7 @@ describe("Chart Page Automation Tests", () => {
     cy.focused().type('{del}');
     chartPage.elements.chart1().should("not.exist");
     chartPage.dragChartToSection();
-    chartPage.elements.chart1().should("exist");
+    chartPage.elements.chart2().should("exist");
     });
   });
 });
