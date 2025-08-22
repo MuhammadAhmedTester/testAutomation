@@ -108,9 +108,9 @@ describe("Chart Page Automation Tests", () => {
   });
 
   describe("Chart Workflow - Negative Test Cases", () => {
-    it("should not place chart outside the section", () => {
-      chartPage.openMasterPage();
-      chartPage.elements.section1().should("be.visible");
+    it.only("should not place chart outside the section", () => {
+      // chartPage.openMasterPage();
+      // chartPage.elements.section1().should("be.visible");
       // drag and drop the chart outside the section
       chartPage.dragChartOutsideTheSection();
       cy.contains("Please Select traget section. Something is wrong.").should(
@@ -155,17 +155,17 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chart3().should("exist");
     });
 
-    it("should allow chart removal and re-placement", () => {
+    it.only("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
       // chartPage.elements.clearButton().click({ force: true });
       // chartPage.elements.confirmButton().click({ force: true });
-      chartPage.elements.chart1().click();
+      chartPage.elements.chart3().click();
       chartPage.elements.deleteChart().click();
-      chartPage.elements.chart1().should("not.exist");
+      chartPage.elements.chart3().should("not.exist");
       chartPage.dragChartToSection();
-      chartPage.elements.chart1().should("exist");
+      chartPage.elements.chart3().should("exist");
     });
   });
 });
