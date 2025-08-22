@@ -104,13 +104,13 @@ class ChartPage {
     }
 
     dragChartOutsideTheSection() {
-        this.elements.chartPaletteIcon().drag("#playground", { timeout: 60000 });
+        this.elements.chartPaletteIcon().drag('[name="DesignArea"]', { timeout: 60000 });
         this.elements.playground().click();
 
     }
 
     dragChartOnMasterPage() {
-        this.elements.chartPaletteIcon().drag("#MasterPage > #MasterPagSection3", { timeout: 60000 });
+        this.elements.chartPaletteIcon().drag('[aria-label="layout_section"]', { timeout: 60000 });
         this.elements.masterPage().click();
 
     }

@@ -139,12 +139,19 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chart3().should("exist");
     });
 
-    it("should handle viewport change during drag", () => {
+    it("should handle viewport change during drag(375, 667)", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       cy.viewport(375, 667); // Mobile
       chartPage.dragChartToSection();
+      chartPage.elements.chart3().should("exist");
+    });
+
+    it("should handle viewport change during drag(1920, 1080)", () => {
+      chartPage.openMasterPage();
+      chartPage.elements.chartPaletteIcon().realHover();      
       cy.viewport(1920, 1080); // Desktop
+      chartPage.dragChartToSection();
       chartPage.elements.chart3().should("exist");
     });
 
@@ -154,7 +161,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.dragChartToSection();
       // chartPage.elements.clearButton().click({ force: true });
       // chartPage.elements.confirmButton().click({ force: true });
-      chartPage.elements.chart1.click();
+      chartPage.elements.chart1().click();
       chartPage.elements.deleteChart().click();
       chartPage.elements.chart1().should("not.exist");
       chartPage.dragChartToSection();
