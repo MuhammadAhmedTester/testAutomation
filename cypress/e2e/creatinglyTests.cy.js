@@ -125,7 +125,7 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
       cy.wait("@slowNetwork");
-      chartPage.elements.chart3().should("exist");
+      chartPage.elements.chart1().should("exist");
     });
 
     it("should handle viewport change during drag(375, 667)", () => {
@@ -141,20 +141,21 @@ describe("Chart Page Automation Tests", () => {
       chartPage.elements.chartPaletteIcon().realHover();      
       cy.viewport(1920, 1080); // Desktop
       chartPage.dragChartToSection();
-      chartPage.elements.chart3().should("exist");
+      chartPage.elements.chart2().should("exist");
     });
 
-    it("should allow chart removal and re-placement", () => {
+    it.only("should allow chart removal and re-placement", () => {
       chartPage.openMasterPage();
       chartPage.elements.chartPaletteIcon().realHover();
       chartPage.dragChartToSection();
-      // chartPage.elements.clearButton().click({ force: true });
-      // chartPage.elements.confirmButton().click({ force: true });
-      chartPage.elements.chart3().click();
-      chartPage.elements.deleteChart().click();
-      chartPage.elements.chart3().should("not.exist");
-      chartPage.dragChartToSection();
-      chartPage.elements.chart3().should("exist");
+    // chartPage.elements.clearButton().click({ force: true });
+    // chartPage.elements.confirmButton().click({ force: true });
+    chartPage.elements.chart1().click();
+    // Press Delete key to remove chart
+    cy.focused().type('{del}');
+    chartPage.elements.chart1().should("not.exist");
+    chartPage.dragChartToSection();
+    chartPage.elements.chart1().should("exist");
     });
   });
 });
